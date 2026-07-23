@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}
+Schedule Meeting | MeetVerse
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="schedule-page">
+
+        <div class="mb-4">
+            <h1 class="fw-bold mb-2">
+                Schedule a Meeting
+            </h1>
+
+            <p class="text-secondary mb-0">
+                Select the meeting date and time
+                using the 12-hour AM/PM format.
+            </p>
+        </div>
+
+        <div class="schedule-form-card">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <div>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label
+                        for="{{ form.title.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        {{ form.title.label }}
+                    </label>
+
+                    {{ form.title }}
+
+                    {% for error in form.title.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label
+                        for="{{ form.description.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        {{ form.description.label }}
+                    </label>
+
+                    {{ form.description }}
+
+                    {% for error in form.description.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label
+                        for="{{ form.schedule_date.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        {{ form.schedule_date.label }}
+                    </label>
+
+                    {{ form.schedule_date }}
+
+                    {% for error in form.schedule_date.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Meeting time
+                    </label>
+
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <label
+                                for="{{ form.schedule_hour.id_for_label }}"
+                                class="small text-secondary mb-1"
+                            >
+                                Hour
+                            </label>
+
+                            {{ form.schedule_hour }}
+
+                            {% for error in form.schedule_hour.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-4">
+                            <label
+                                for="{{ form.schedule_minute.id_for_label }}"
+                                class="small text-secondary mb-1"
+                            >
+                                Minute
+                            </label>
+
+                            {{ form.schedule_minute }}
+
+                            {% for error in form.schedule_minute.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-4">
+                            <label
+                                for="{{ form.schedule_period.id_for_label }}"
+                                class="small text-secondary mb-1"
+                            >
+                                AM/PM
+                            </label>
+
+                            {{ form.schedule_period }}
+
+                            {% for error in form.schedule_period.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-text">
+                        Example: 03:30 PM
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label
+                        for="{{ form.duration_minutes.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        {{ form.duration_minutes.label }}
+                    </label>
+
+                    {{ form.duration_minutes }}
+
+                    {% if form.duration_minutes.help_text %}
+                        <div class="form-text">
+                            {{ form.duration_minutes.help_text }}
+                        </div>
+                    {% endif %}
+
+                    {% for error in form.duration_minutes.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label
+                        for="{{ form.meeting_password.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        {{ form.meeting_password.label }}
+                    </label>
+
+                    {{ form.meeting_password }}
+
+                    {% if form.meeting_password.help_text %}
+                        <div class="form-text">
+                            {{ form.meeting_password.help_text }}
+                        </div>
+                    {% endif %}
+
+                    {% for error in form.meeting_password.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-check mb-4">
+                    {{ form.waiting_room_enabled }}
+
+                    <label
+                        for="{{ form.waiting_room_enabled.id_for_label }}"
+                        class="form-check-label"
+                    >
+                        {{ form.waiting_room_enabled.label }}
+                    </label>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button
+                        type="submit"
+                        class="btn btn-primary px-4"
+                    >
+                        Schedule Meeting
+                    </button>
+
+                    <a
+                        href="{% url 'dashboard' %}"
+                        class="btn btn-outline-secondary"
+                    >
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .schedule-page {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .schedule-form-card {
+        padding: 30px;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow:
+            0 12px 35px
+            rgba(15, 23, 42, 0.08);
+    }
+
+    .schedule-form-card select {
+        min-height: 46px;
+    }
+
+    @media (max-width: 576px) {
+        .schedule-form-card {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}

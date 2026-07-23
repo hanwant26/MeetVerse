@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}
+Cancel Meeting | MeetVerse
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="cancel-meeting-card">
+
+        <div class="cancel-icon">
+            ⚠️
+        </div>
+
+        <h1 class="h2 fw-bold mb-2">
+            Cancel Scheduled Meeting?
+        </h1>
+
+        <p class="text-secondary mb-4">
+            This action permanently deletes the scheduled
+            meeting and its meeting code.
+        </p>
+
+        <div class="meeting-cancel-summary">
+            <div>
+                <span>Meeting</span>
+
+                <strong>
+                    {{ meeting.title }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Code</span>
+
+                <strong>
+                    {{ meeting.meeting_code }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Date</span>
+
+                <strong>
+                    {{ meeting.scheduled_at|date:"d M Y" }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Time</span>
+
+                <strong>
+                    {{ meeting.scheduled_at|date:"h:i A" }}
+                </strong>
+            </div>
+        </div>
+
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <button
+                    type="submit"
+                    class="btn btn-danger"
+                >
+                    Yes, Cancel Meeting
+                </button>
+
+                <a
+                    href="{% url 'scheduled_meeting_success' meeting.meeting_code %}"
+                    class="btn btn-outline-secondary"
+                >
+                    Keep Meeting
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .cancel-meeting-card {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 34px;
+        text-align: center;
+        border: 1px solid #fecaca;
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow:
+            0 12px 35px
+            rgba(15, 23, 42, 0.08);
+    }
+
+    .cancel-icon {
+        margin-bottom: 15px;
+        font-size: 3rem;
+    }
+
+    .meeting-cancel-summary {
+        overflow: hidden;
+        text-align: left;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+    }
+
+    .meeting-cancel-summary div {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 13px 16px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .meeting-cancel-summary div:last-child {
+        border-bottom: none;
+    }
+
+    .meeting-cancel-summary span {
+        color: #64748b;
+    }
+
+    @media (max-width: 576px) {
+        .cancel-meeting-card {
+            padding: 22px;
+        }
+
+        .meeting-cancel-summary div {
+            flex-direction: column;
+            gap: 3px;
+        }
+    }
+</style>
+{% endblock %}

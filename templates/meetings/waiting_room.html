@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}
+Waiting Room | MeetVerse
+{% endblock %}
+
+{% block content %}
+<section class="waiting-room-section">
+    <div class="waiting-room-card shadow">
+        <div class="waiting-animation">
+            <div class="waiting-avatar">
+                {{ user.username|first|upper }}
+            </div>
+
+            <span class="waiting-dot"></span>
+            <span class="waiting-dot"></span>
+            <span class="waiting-dot"></span>
+        </div>
+
+        <h1 class="fw-bold mt-4">
+            Please wait
+        </h1>
+
+        <p class="text-secondary">
+            The host will let you into
+            <strong>{{ meeting.title }}</strong>.
+        </p>
+
+        <div class="waiting-details">
+            <p class="mb-1 text-secondary">
+                Meeting code
+            </p>
+
+            <p class="fw-semibold mb-0">
+                {{ meeting.meeting_code }}
+            </p>
+        </div>
+
+        <div
+            id="waitingStatus"
+            class="alert alert-info mt-4"
+        >
+            Waiting for host approval…
+        </div>
+
+        <a
+            href="{% url 'dashboard' %}"
+            class="btn btn-outline-secondary mt-2"
+        >
+            Cancel
+        </a>
+    </div>
+</section>
+
+<script>
+    const statusElement =
+        document.getElementById("waitingStatus");
+
+    const statusUrl =
+        "{% url 'waiting_room_status' meeting.meeting_code %}";
+
+    const checkInterval = setInterval(
+        async function () {
+            try {
+                const response = await fetch(
+                    statusUrl,
+                    {
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (
+                    data.status === "admitted"
+                    && data.redirect_url
+                ) {
+                    clearInterval(checkInterval);
+
+                    statusElement.className =
+                        "alert alert-success mt-4";
+
+                    statusElement.textContent =
+                        "You have been admitted. Opening the meeting…";
+
+                    window.location.href = data.redirect_url;
+                }
+
+                if (data.status === "rejected") {
+                    clearInterval(checkInterval);
+
+                    statusElement.className =
+                        "alert alert-danger mt-4";
+
+                    statusElement.textContent =
+                        "The host rejected your join request.";
+                }
+            } catch (error) {
+                statusElement.className =
+                    "alert alert-warning mt-4";
+
+                statusElement.textContent =
+                    "Connection interrupted. Retrying…";
+            }
+        },
+        3000
+    );
+</script>
+{% endblock %}

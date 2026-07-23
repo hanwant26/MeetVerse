@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}
+Attendance Report | MeetVerse
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="attendance-page">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">
+                    Attendance Report
+                </h1>
+
+                <p class="text-secondary mb-0">
+                    {{ meeting.title }}
+                    ·
+                    {{ meeting.meeting_code }}
+                </p>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a
+                    href="{% url 'meeting_detail' meeting.meeting_code %}"
+                    class="btn btn-outline-secondary"
+                >
+                    Back to Meeting
+                </a>
+
+                <a
+                    href="{% url 'download_attendance_csv' meeting.meeting_code %}"
+                    class="btn btn-success"
+                >
+                    Download CSV
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="attendance-summary-card">
+                    <span class="attendance-summary-label">
+                        Meeting
+                    </span>
+
+                    <strong>
+                        {{ meeting.title }}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="attendance-summary-card">
+                    <span class="attendance-summary-label">
+                        Unique Participants
+                    </span>
+
+                    <strong>
+                        {{ participant_count }}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="attendance-summary-card">
+                    <span class="attendance-summary-label">
+                        Combined Attendance
+                    </span>
+
+                    <strong>
+                        {{ total_attendance }}
+                    </strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="attendance-table-card">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Participant</th>
+                            <th>Role</th>
+                            <th>First Joined</th>
+                            <th>Last Left</th>
+                            <th>Sessions</th>
+                            <th>Total Duration</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in report_rows %}
+                            <tr>
+                                <td>
+                                    <strong>
+                                        {{ row.display_name }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ row.role }}
+                                </td>
+
+                                <td>
+                                    {{ row.first_joined_display }}
+                                </td>
+
+                                <td>
+                                    {{ row.last_left_display }}
+                                </td>
+
+                                <td>
+                                    {{ row.session_count }}
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        {{ row.duration_display }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {% if row.is_active %}
+                                        <span class="badge bg-success">
+                                            Connected
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            Left
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td
+                                    colspan="7"
+                                    class="text-center py-5 text-secondary"
+                                >
+                                    No attendance has been recorded yet.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .attendance-page {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .attendance-summary-card {
+        height: 100%;
+        padding: 22px;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .attendance-summary-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #64748b;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .attendance-summary-card strong {
+        color: #0f172a;
+        font-size: 1.15rem;
+    }
+
+    .attendance-table-card {
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .attendance-table-card thead th {
+        padding: 16px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+    }
+
+    .attendance-table-card tbody td {
+        padding: 16px;
+        white-space: nowrap;
+    }
+
+    .attendance-table-card tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    @media (max-width: 768px) {
+        .attendance-table-card tbody td,
+        .attendance-table-card thead th {
+            padding: 12px;
+        }
+    }
+</style>
+{% endblock %}

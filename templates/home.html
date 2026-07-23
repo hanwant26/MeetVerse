@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}
+MeetVerse | Video Conferencing
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <span class="badge bg-primary mb-3">
+                    Secure Video Conferencing
+                </span>
+
+                <h1 class="display-3 fw-bold">
+                    Connect and collaborate from anywhere.
+                </h1>
+
+                <p class="lead text-secondary my-4">
+                    Create secure video meetings with screen sharing,
+                    live chat, waiting rooms and host controls.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">
+                        Open Dashboard
+                    </a>
+                    {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                        Get Started
+                    </a>
+
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">
+                        Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-6 mt-5 mt-lg-0">
+                <div class="meeting-preview shadow-lg">
+                    <div class="camera-area">
+                        <div class="user-avatar">
+                            M
+                        </div>
+
+                        <h3>MeetVerse Meeting</h3>
+
+                        <p>Ready to connect</p>
+                    </div>
+
+                    <div class="meeting-controls">
+                        <button title="Microphone">🎤</button>
+                        <button title="Camera">📹</button>
+                        <button title="Screen Share">🖥️</button>
+                        <button title="Chat">💬</button>
+                        <button class="end-call" title="End Call">☎</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

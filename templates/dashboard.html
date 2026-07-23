@@ -1,0 +1,1103 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | MeetVerse
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="container py-5">
+
+        <!-- Welcome section -->
+        <section class="dashboard-hero mb-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <span class="dashboard-label">
+                        MeetVerse Dashboard
+                    </span>
+
+                    <h1 class="display-6 fw-bold mt-2 mb-3">
+                        Welcome,
+                        {{ user.get_full_name|default:user.username }}
+                    </h1>
+
+                    <p class="dashboard-subtitle mb-0">
+                        Start an instant meeting, schedule a future
+                        meeting, or join using a meeting code.
+                    </p>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="dashboard-user-card">
+                        <div class="dashboard-avatar">
+                            {{ user.username|first|upper }}
+                        </div>
+
+                        <div class="user-card-details">
+                            <strong class="d-block">
+                                {{ user.get_full_name|default:user.username }}
+                            </strong>
+
+                            <span class="text-secondary">
+                                {{ user.email|default:"MeetVerse user" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Meeting actions -->
+        <section class="mb-5">
+            <div class="section-heading mb-3">
+                <div>
+                    <h2 class="h4 fw-bold mb-1">
+                        Meeting Actions
+                    </h2>
+
+                    <p class="text-secondary mb-0">
+                        Choose how you want to connect.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-xl-4">
+                    <div class="action-card">
+                        <div class="action-icon">
+                            🎥
+                        </div>
+
+                        <h3 class="h5 fw-bold">
+                            Instant Meeting
+                        </h3>
+
+                        <p class="text-secondary">
+                            Create a meeting immediately and share
+                            its code with participants.
+                        </p>
+
+                        <a
+                            href="{% url 'create_meeting' %}"
+                            class="btn btn-primary w-100"
+                        >
+                            Start Instant Meeting
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-4">
+                    <div class="action-card">
+                        <div class="action-icon">
+                            📅
+                        </div>
+
+                        <h3 class="h5 fw-bold">
+                            Schedule Meeting
+                        </h3>
+
+                        <p class="text-secondary">
+                            Select a future date, 12-hour time,
+                            and planned meeting duration.
+                        </p>
+
+                        <a
+                            href="{% url 'schedule_meeting' %}"
+                            class="btn btn-outline-primary w-100"
+                        >
+                            Schedule Meeting
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-4">
+                    <div class="action-card">
+                        <div class="action-icon">
+                            🔗
+                        </div>
+
+                        <h3 class="h5 fw-bold">
+                            Join Meeting
+                        </h3>
+
+                        <p class="text-secondary">
+                            Enter a meeting code and join an existing
+                            MeetVerse meeting.
+                        </p>
+
+                        <a
+                            href="{% url 'join_meeting' %}"
+                            class="btn btn-outline-secondary w-100"
+                        >
+                            Join with Code
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Statistics -->
+        <section class="mb-5">
+            <div class="section-heading mb-3">
+                <div>
+                    <h2 class="h4 fw-bold mb-1">
+                        Meeting Overview
+                    </h2>
+
+                    <p class="text-secondary mb-0">
+                        Summary of meetings hosted by you.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-6 col-lg">
+                    <div class="stat-card">
+                        <span class="stat-icon">
+                            📋
+                        </span>
+
+                        <strong class="stat-number">
+                            {{ meeting_counts.all }}
+                        </strong>
+
+                        <span class="stat-label">
+                            All Meetings
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg">
+                    <div class="stat-card">
+                        <span class="stat-icon">
+                            🔴
+                        </span>
+
+                        <strong class="stat-number">
+                            {{ meeting_counts.live }}
+                        </strong>
+
+                        <span class="stat-label">
+                            Live
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg">
+                    <div class="stat-card">
+                        <span class="stat-icon">
+                            📅
+                        </span>
+
+                        <strong class="stat-number">
+                            {{ meeting_counts.upcoming }}
+                        </strong>
+
+                        <span class="stat-label">
+                            Upcoming
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg">
+                    <div class="stat-card">
+                        <span class="stat-icon">
+                            ⚠️
+                        </span>
+
+                        <strong class="stat-number">
+                            {{ meeting_counts.overdue }}
+                        </strong>
+
+                        <span class="stat-label">
+                            Overdue
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg">
+                    <div class="stat-card">
+                        <span class="stat-icon">
+                            ✅
+                        </span>
+
+                        <strong class="stat-number">
+                            {{ meeting_counts.ended }}
+                        </strong>
+
+                        <span class="stat-label">
+                            Ended
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Live meetings -->
+        <section class="dashboard-section mb-5">
+            <div class="section-heading mb-3">
+                <div>
+                    <h2 class="h4 fw-bold mb-1">
+                        Live Meetings
+                    </h2>
+
+                    <p class="text-secondary mb-0">
+                        Meetings currently in progress.
+                    </p>
+                </div>
+
+                {% if meeting_counts.live %}
+                    <span class="badge bg-danger dashboard-count-badge">
+                        {{ meeting_counts.live }} Live
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if live_meetings %}
+                <div class="meeting-list">
+                    {% for meeting in live_meetings %}
+                        <article class="meeting-card live-meeting-card">
+                            <div class="meeting-card-main">
+                                <div class="meeting-card-icon live-icon">
+                                    🔴
+                                </div>
+
+                                <div class="meeting-card-details">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                        <h3 class="h5 fw-bold mb-0">
+                                            {{ meeting.title }}
+                                        </h3>
+
+                                        <span class="badge bg-danger">
+                                            Live
+                                        </span>
+                                    </div>
+
+                                    <p class="meeting-code mb-1">
+                                        Meeting code:
+
+                                        <strong>
+                                            {{ meeting.meeting_code }}
+                                        </strong>
+                                    </p>
+
+                                    <div class="meeting-meta">
+                                        {% if meeting.started_at %}
+                                            <span>
+                                                Started:
+                                                {{ meeting.started_at|date:"d M Y, h:i A" }}
+                                            </span>
+                                        {% endif %}
+
+                                        <span>
+                                            {% if meeting.waiting_room_enabled %}
+                                                Waiting room enabled
+                                            {% else %}
+                                                Waiting room disabled
+                                            {% endif %}
+                                        </span>
+
+                                        <span>
+                                            {% if meeting.has_password %}
+                                                Password required
+                                            {% else %}
+                                                No password
+                                            {% endif %}
+                                        </span>
+                                    </div>
+
+                                    {% if meeting.description %}
+                                        <p class="meeting-description mt-2 mb-0">
+                                            {{ meeting.description|truncatechars:140 }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="meeting-card-actions">
+                                <a
+                                    href="{% url 'meeting_detail' meeting.meeting_code %}"
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    Return to Meeting
+                                </a>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    onclick="copyDashboardMeetingCode('{{ meeting.meeting_code|escapejs }}')"
+                                >
+                                    Copy Code
+                                </button>
+
+                                <a
+                                    href="{% url 'attendance_report' meeting.meeting_code %}"
+                                    class="btn btn-outline-primary btn-sm"
+                                >
+                                    Attendance
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-section">
+                    <div class="empty-section-icon">
+                        🎙️
+                    </div>
+
+                    <h3 class="h6 fw-bold">
+                        No live meetings
+                    </h3>
+
+                    <p class="text-secondary mb-3">
+                        You do not have a meeting in progress.
+                    </p>
+
+                    <a
+                        href="{% url 'create_meeting' %}"
+                        class="btn btn-primary btn-sm"
+                    >
+                        Start Instant Meeting
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+
+        <!-- Upcoming meetings -->
+        <section class="dashboard-section mb-5">
+            <div class="section-heading mb-3">
+                <div>
+                    <h2 class="h4 fw-bold mb-1">
+                        Upcoming Meetings
+                    </h2>
+
+                    <p class="text-secondary mb-0">
+                        Meetings scheduled for a future date and time.
+                    </p>
+                </div>
+
+                <a
+                    href="{% url 'schedule_meeting' %}"
+                    class="btn btn-sm btn-outline-primary"
+                >
+                    + Schedule Meeting
+                </a>
+            </div>
+
+            {% if upcoming_meetings %}
+                <div class="meeting-grid">
+                    {% for meeting in upcoming_meetings %}
+                        <article class="scheduled-meeting-card">
+                            <div class="scheduled-card-top">
+                                <div class="meeting-card-icon scheduled-icon">
+                                    📅
+                                </div>
+
+                                <span class="badge bg-primary">
+                                    Upcoming
+                                </span>
+                            </div>
+
+                            <h3 class="h5 fw-bold mb-2">
+                                {{ meeting.title }}
+                            </h3>
+
+                            <p class="meeting-code mb-3">
+                                Code:
+
+                                <strong>
+                                    {{ meeting.meeting_code }}
+                                </strong>
+                            </p>
+
+                            <div class="scheduled-details">
+                                <div class="scheduled-detail-row">
+                                    <span>Date</span>
+
+                                    <strong>
+                                        {{ meeting.scheduled_at|date:"d M Y" }}
+                                    </strong>
+                                </div>
+
+                                <div class="scheduled-detail-row">
+                                    <span>Time</span>
+
+                                    <strong>
+                                        {{ meeting.scheduled_at|date:"h:i A" }}
+                                    </strong>
+                                </div>
+
+                                <div class="scheduled-detail-row">
+                                    <span>Duration</span>
+
+                                    <strong>
+                                        {{ meeting.duration_minutes }}
+                                        minutes
+                                    </strong>
+                                </div>
+
+                                <div class="scheduled-detail-row">
+                                    <span>Waiting room</span>
+
+                                    <strong>
+                                        {% if meeting.waiting_room_enabled %}
+                                            Enabled
+                                        {% else %}
+                                            Disabled
+                                        {% endif %}
+                                    </strong>
+                                </div>
+
+                                <div class="scheduled-detail-row">
+                                    <span>Password</span>
+
+                                    <strong>
+                                        {% if meeting.has_password %}
+                                            Required
+                                        {% else %}
+                                            Not required
+                                        {% endif %}
+                                    </strong>
+                                </div>
+                            </div>
+
+                            {% if meeting.description %}
+                                <p class="meeting-description mt-3 mb-0">
+                                    {{ meeting.description|truncatechars:130 }}
+                                </p>
+                            {% endif %}
+
+                            <div class="scheduled-card-actions mt-4">
+                                <a
+                                    href="{% url 'meeting_detail' meeting.meeting_code %}"
+                                    class="btn btn-primary btn-sm"
+                                >
+                                    Open Meeting
+                                </a>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    onclick="copyDashboardMeetingCode('{{ meeting.meeting_code|escapejs }}')"
+                                >
+                                    Copy Code
+                                </button>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-section">
+                    <div class="empty-section-icon">
+                        🗓️
+                    </div>
+
+                    <h3 class="h6 fw-bold">
+                        No upcoming meetings
+                    </h3>
+
+                    <p class="text-secondary mb-3">
+                        You have not scheduled a future meeting.
+                    </p>
+
+                    <a
+                        href="{% url 'schedule_meeting' %}"
+                        class="btn btn-outline-primary btn-sm"
+                    >
+                        Schedule Meeting
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+
+        <!-- Overdue meetings -->
+        {% if overdue_meetings %}
+            <section class="dashboard-section mb-5">
+                <div class="section-heading mb-3">
+                    <div>
+                        <h2 class="h4 fw-bold mb-1">
+                            Overdue Meetings
+                        </h2>
+
+                        <p class="text-secondary mb-0">
+                            Their scheduled time has passed, but they
+                            have not been started or ended.
+                        </p>
+                    </div>
+
+                    <span class="badge bg-warning text-dark dashboard-count-badge">
+                        {{ meeting_counts.overdue }} Overdue
+                    </span>
+                </div>
+
+                <div class="meeting-list">
+                    {% for meeting in overdue_meetings %}
+                        <article class="meeting-card overdue-meeting-card">
+                            <div class="meeting-card-main">
+                                <div class="meeting-card-icon overdue-icon">
+                                    ⚠️
+                                </div>
+
+                                <div class="meeting-card-details">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                        <h3 class="h5 fw-bold mb-0">
+                                            {{ meeting.title }}
+                                        </h3>
+
+                                        <span class="badge bg-warning text-dark">
+                                            Overdue
+                                        </span>
+                                    </div>
+
+                                    <p class="meeting-code mb-1">
+                                        Meeting code:
+
+                                        <strong>
+                                            {{ meeting.meeting_code }}
+                                        </strong>
+                                    </p>
+
+                                    <div class="meeting-meta">
+                                        <span>
+                                            Scheduled:
+                                            {{ meeting.scheduled_at|date:"d M Y, h:i A" }}
+                                        </span>
+
+                                        <span>
+                                            Duration:
+                                            {{ meeting.duration_minutes }}
+                                            minutes
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="meeting-card-actions">
+                                <a
+                                    href="{% url 'meeting_detail' meeting.meeting_code %}"
+                                    class="btn btn-warning btn-sm"
+                                >
+                                    Open Meeting
+                                </a>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    onclick="copyDashboardMeetingCode('{{ meeting.meeting_code|escapejs }}')"
+                                >
+                                    Copy Code
+                                </button>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+
+        <!-- Meeting history -->
+        <section class="dashboard-section">
+            <div class="section-heading mb-3">
+                <div>
+                    <h2 class="h4 fw-bold mb-1">
+                        Meeting History
+                    </h2>
+
+                    <p class="text-secondary mb-0">
+                        Your recently completed meetings.
+                    </p>
+                </div>
+
+                {% if meeting_counts.ended %}
+                    <span class="badge bg-secondary dashboard-count-badge">
+                        {{ meeting_counts.ended }} Ended
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if ended_meetings %}
+                <div class="meeting-list">
+                    {% for meeting in ended_meetings %}
+                        <article class="meeting-card ended-meeting-card">
+                            <div class="meeting-card-main">
+                                <div class="meeting-card-icon ended-icon">
+                                    ✓
+                                </div>
+
+                                <div class="meeting-card-details">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                        <h3 class="h5 fw-bold mb-0">
+                                            {{ meeting.title }}
+                                        </h3>
+
+                                        <span class="badge bg-secondary">
+                                            Ended
+                                        </span>
+                                    </div>
+
+                                    <p class="meeting-code mb-1">
+                                        Meeting code:
+
+                                        <strong>
+                                            {{ meeting.meeting_code }}
+                                        </strong>
+                                    </p>
+
+                                    <div class="meeting-meta">
+                                        {% if meeting.started_at %}
+                                            <span>
+                                                Started:
+                                                {{ meeting.started_at|date:"d M Y, h:i A" }}
+                                            </span>
+                                        {% endif %}
+
+                                        {% if meeting.ended_at %}
+                                            <span>
+                                                Ended:
+                                                {{ meeting.ended_at|date:"d M Y, h:i A" }}
+                                            </span>
+                                        {% endif %}
+
+                                        {% if meeting.scheduled_at %}
+                                            <span>
+                                                Scheduled:
+                                                {{ meeting.scheduled_at|date:"d M Y, h:i A" }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="meeting-card-actions">
+                                <a
+                                    href="{% url 'attendance_report' meeting.meeting_code %}"
+                                    class="btn btn-outline-primary btn-sm"
+                                >
+                                    View Attendance
+                                </a>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    onclick="copyDashboardMeetingCode('{{ meeting.meeting_code|escapejs }}')"
+                                >
+                                    Copy Code
+                                </button>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-section">
+                    <div class="empty-section-icon">
+                        📭
+                    </div>
+
+                    <h3 class="h6 fw-bold">
+                        No meeting history
+                    </h3>
+
+                    <p class="text-secondary mb-0">
+                        Completed meetings will appear here.
+                    </p>
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+</div>
+
+
+<style>
+    .dashboard-page {
+        min-height: calc(100vh - 70px);
+        background:
+            linear-gradient(
+                180deg,
+                #f8fafc 0%,
+                #eef2ff 100%
+            );
+    }
+
+    .dashboard-hero {
+        padding: 34px;
+        border: 1px solid #e2e8f0;
+        border-radius: 22px;
+        background: #ffffff;
+        box-shadow:
+            0 12px 35px
+            rgba(15, 23, 42, 0.07);
+    }
+
+    .dashboard-label {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #4338ca;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .dashboard-subtitle {
+        max-width: 650px;
+        color: #64748b;
+        font-size: 1.05rem;
+    }
+
+    .dashboard-user-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #f8fafc;
+    }
+
+    .dashboard-avatar {
+        display: flex;
+        width: 54px;
+        height: 54px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #4f46e5;
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+
+    .user-card-details {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .section-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .dashboard-count-badge {
+        padding: 8px 12px;
+        font-size: 0.84rem;
+    }
+
+    .dashboard-section {
+        padding: 28px;
+        border: 1px solid #e2e8f0;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.84);
+        box-shadow:
+            0 10px 30px
+            rgba(15, 23, 42, 0.05);
+    }
+
+    .action-card {
+        display: flex;
+        height: 100%;
+        padding: 25px;
+        flex-direction: column;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow:
+            0 8px 25px
+            rgba(15, 23, 42, 0.05);
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-4px);
+        box-shadow:
+            0 14px 35px
+            rgba(15, 23, 42, 0.1);
+    }
+
+    .action-card p {
+        flex-grow: 1;
+    }
+
+    .action-icon {
+        display: flex;
+        width: 52px;
+        height: 52px;
+        margin-bottom: 18px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: #eef2ff;
+        font-size: 1.5rem;
+    }
+
+    .stat-card {
+        display: flex;
+        height: 100%;
+        padding: 20px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #ffffff;
+        text-align: center;
+        box-shadow:
+            0 6px 20px
+            rgba(15, 23, 42, 0.05);
+    }
+
+    .stat-icon {
+        margin-bottom: 7px;
+        font-size: 1.35rem;
+    }
+
+    .stat-number {
+        color: #0f172a;
+        font-size: 1.65rem;
+        line-height: 1;
+    }
+
+    .stat-label {
+        margin-top: 7px;
+        color: #64748b;
+        font-size: 0.84rem;
+    }
+
+    .meeting-list {
+        display: grid;
+        gap: 16px;
+    }
+
+    .meeting-grid {
+        display: grid;
+        grid-template-columns:
+            repeat(
+                auto-fit,
+                minmax(280px, 1fr)
+            );
+        gap: 18px;
+    }
+
+    .meeting-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 22px;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow:
+            0 8px 25px
+            rgba(15, 23, 42, 0.05);
+    }
+
+    .live-meeting-card {
+        border-left: 5px solid #dc2626;
+    }
+
+    .overdue-meeting-card {
+        border-left: 5px solid #f59e0b;
+    }
+
+    .ended-meeting-card {
+        border-left: 5px solid #64748b;
+    }
+
+    .meeting-card-main {
+        display: flex;
+        min-width: 0;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .meeting-card-icon {
+        display: flex;
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: #f1f5f9;
+        font-size: 1.3rem;
+    }
+
+    .live-icon {
+        background: #fee2e2;
+    }
+
+    .scheduled-icon {
+        background: #e0e7ff;
+    }
+
+    .overdue-icon {
+        background: #fef3c7;
+    }
+
+    .ended-icon {
+        background: #e2e8f0;
+    }
+
+    .meeting-card-details {
+        min-width: 0;
+    }
+
+    .meeting-code {
+        color: #475569;
+    }
+
+    .meeting-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        color: #64748b;
+        font-size: 0.88rem;
+    }
+
+    .meeting-description {
+        color: #64748b;
+    }
+
+    .meeting-card-actions {
+        display: flex;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .scheduled-meeting-card {
+        display: flex;
+        padding: 22px;
+        flex-direction: column;
+        border: 1px solid #dbeafe;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow:
+            0 8px 25px
+            rgba(15, 23, 42, 0.05);
+    }
+
+    .scheduled-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+
+    .scheduled-details {
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+    }
+
+    .scheduled-detail-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 0.9rem;
+    }
+
+    .scheduled-detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .scheduled-detail-row span {
+        color: #64748b;
+    }
+
+    .scheduled-detail-row strong {
+        text-align: right;
+    }
+
+    .scheduled-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: auto;
+    }
+
+    .empty-section {
+        padding: 42px 20px;
+        text-align: center;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        background: #ffffff;
+    }
+
+    .empty-section-icon {
+        margin-bottom: 12px;
+        font-size: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-hero,
+        .dashboard-section {
+            padding: 22px;
+        }
+
+        .meeting-card {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .meeting-card-actions {
+            justify-content: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .meeting-card-main {
+            flex-direction: column;
+        }
+
+        .meeting-card-actions .btn,
+        .scheduled-card-actions .btn {
+            width: 100%;
+        }
+
+        .scheduled-detail-row {
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .scheduled-detail-row strong {
+            text-align: left;
+        }
+    }
+</style>
+
+
+<script>
+    function copyDashboardMeetingCode(meetingCode) {
+        navigator.clipboard
+            .writeText(meetingCode)
+            .then(function () {
+                alert(
+                    "Meeting code copied: "
+                    + meetingCode
+                );
+            })
+            .catch(function () {
+                alert(
+                    "Could not copy the meeting code."
+                );
+            });
+    }
+</script>
+{% endblock %}

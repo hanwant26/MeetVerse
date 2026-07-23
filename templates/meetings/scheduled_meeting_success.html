@@ -1,0 +1,643 @@
+{% extends "base.html" %}
+
+{% block title %}
+Scheduled Meeting | MeetVerse
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="scheduled-success-card">
+
+        {% if meeting.status == "live" %}
+            <div class="status-icon live-status-icon">
+                ●
+            </div>
+
+            <h1 class="fw-bold mb-2">
+                Meeting Is Live
+            </h1>
+
+            <p class="text-secondary mb-4">
+                Participants can now request entry
+                or join the meeting.
+            </p>
+
+        {% elif meeting.status == "ended" %}
+            <div class="status-icon ended-status-icon">
+                ✓
+            </div>
+
+            <h1 class="fw-bold mb-2">
+                Meeting Ended
+            </h1>
+
+            <p class="text-secondary mb-4">
+                This meeting has finished and
+                cannot be reopened.
+            </p>
+
+        {% else %}
+            <div class="status-icon upcoming-status-icon">
+                📅
+            </div>
+
+            <h1 class="fw-bold mb-2">
+                Scheduled Meeting
+            </h1>
+
+            <p class="text-secondary mb-4">
+                Participants cannot enter until
+                you start the meeting.
+            </p>
+        {% endif %}
+
+
+        <div class="meeting-summary">
+            <div class="summary-row">
+                <span>Status</span>
+
+                <strong>
+                    {% if meeting.status == "live" %}
+                        <span class="badge bg-danger">
+                            Live
+                        </span>
+                    {% elif meeting.status == "ended" %}
+                        <span class="badge bg-secondary">
+                            Ended
+                        </span>
+                    {% else %}
+                        <span class="badge bg-primary">
+                            Upcoming
+                        </span>
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Title</span>
+
+                <strong>
+                    {{ meeting.title }}
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Meeting code</span>
+
+                <strong id="scheduledMeetingCode">
+                    {{ meeting.meeting_code }}
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Date</span>
+
+                <strong>
+                    {{ meeting.scheduled_at|date:"d M Y" }}
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Scheduled time</span>
+
+                <strong>
+                    {{ meeting.scheduled_at|date:"h:i A" }}
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Duration</span>
+
+                <strong>
+                    {{ meeting.duration_minutes }}
+                    minutes
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Planned end</span>
+
+                <strong>
+                    {{ scheduled_end_at|date:"d M Y, h:i A" }}
+                </strong>
+            </div>
+
+            {% if meeting.started_at %}
+                <div class="summary-row">
+                    <span>Actually started</span>
+
+                    <strong>
+                        {{ meeting.started_at|date:"d M Y, h:i A" }}
+                    </strong>
+                </div>
+            {% endif %}
+
+            {% if meeting.ended_at %}
+                <div class="summary-row">
+                    <span>Ended</span>
+
+                    <strong>
+                        {{ meeting.ended_at|date:"d M Y, h:i A" }}
+                    </strong>
+                </div>
+            {% endif %}
+
+            <div class="summary-row">
+                <span>Timezone</span>
+
+                <strong>
+                    {{ current_timezone }}
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Password</span>
+
+                <strong>
+                    {% if meeting.has_password %}
+                        Required
+                    {% else %}
+                        Not required
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Waiting room</span>
+
+                <strong>
+                    {% if meeting.waiting_room_enabled %}
+                        Enabled
+                    {% else %}
+                        Disabled
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+
+
+        {% if meeting.description %}
+            <div class="meeting-description mt-4">
+                <h2 class="h6 fw-bold">
+                    Description
+                </h2>
+
+                <p class="text-secondary mb-0">
+                    {{ meeting.description|linebreaksbr }}
+                </p>
+            </div>
+        {% endif %}
+
+
+        {% if meeting.status == "upcoming" %}
+            <div class="start-meeting-notice mt-4">
+                <strong>
+                    Ready to begin?
+                </strong>
+
+                <p class="mb-0 mt-1">
+                    Starting the meeting changes its
+                    status to Live and allows participants
+                    to join.
+                </p>
+            </div>
+        {% endif %}
+
+
+        <!-- Invitation tools -->
+        <div class="invitation-tools mt-4">
+            <div class="invitation-tools-heading">
+                <div>
+                    <h2 class="h6 fw-bold mb-1">
+                        Share Meeting
+                    </h2>
+
+                    <p class="small text-secondary mb-0">
+                        Download the calendar event or copy
+                        the complete meeting invitation.
+                    </p>
+                </div>
+            </div>
+
+            <div class="invitation-tool-buttons mt-3">
+                <a
+                    href="{% url 'download_meeting_calendar' meeting.meeting_code %}"
+                    class="btn btn-outline-success"
+                >
+                    📅 Download Calendar
+                </a>
+
+                <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    onclick="copyFullMeetingInvitation()"
+                >
+                    📋 Copy Full Invitation
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    onclick="copyScheduledMeetingCode()"
+                >
+                    Copy Code
+                </button>
+            </div>
+
+            <div
+                id="copyInvitationStatus"
+                class="copy-status mt-3"
+                role="status"
+                aria-live="polite"
+            ></div>
+        </div>
+
+
+        <div class="meeting-actions mt-4">
+
+            {% if meeting.status == "upcoming" %}
+                <form
+                    method="post"
+                    action="{% url 'start_scheduled_meeting' meeting.meeting_code %}"
+                    onsubmit="return confirmStartScheduledMeeting();"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+                        ▶ Start Meeting
+                    </button>
+                </form>
+
+                <a
+                    href="{% url 'edit_scheduled_meeting' meeting.meeting_code %}"
+                    class="btn btn-outline-primary"
+                >
+                    Edit Meeting
+                </a>
+
+                <a
+                    href="{% url 'cancel_scheduled_meeting' meeting.meeting_code %}"
+                    class="btn btn-outline-danger"
+                >
+                    Cancel Meeting
+                </a>
+
+            {% elif meeting.status == "live" %}
+                <a
+                    href="{% url 'meeting_detail' meeting.meeting_code %}"
+                    class="btn btn-danger"
+                >
+                    Open Live Meeting
+                </a>
+
+                <a
+                    href="{% url 'attendance_report' meeting.meeting_code %}"
+                    class="btn btn-outline-primary"
+                >
+                    Attendance
+                </a>
+
+            {% elif meeting.status == "ended" %}
+                <a
+                    href="{% url 'attendance_report' meeting.meeting_code %}"
+                    class="btn btn-outline-primary"
+                >
+                    View Attendance
+                </a>
+            {% endif %}
+
+            <a
+                href="{% url 'dashboard' %}"
+                class="btn btn-outline-secondary"
+            >
+                Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .scheduled-success-card {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 34px;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow:
+            0 12px 35px
+            rgba(15, 23, 42, 0.08);
+    }
+
+    .status-icon {
+        display: flex;
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 20px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .upcoming-status-icon {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+
+    .live-status-icon {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .ended-status-icon {
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+    .meeting-summary {
+        overflow: hidden;
+        text-align: left;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-row span:first-child {
+        color: #64748b;
+    }
+
+    .summary-row strong {
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .meeting-description {
+        padding: 18px;
+        text-align: left;
+        border-radius: 14px;
+        background: #f8fafc;
+    }
+
+    .start-meeting-notice {
+        padding: 16px;
+        border: 1px solid #bbf7d0;
+        border-radius: 14px;
+        background: #f0fdf4;
+        color: #166534;
+    }
+
+    .invitation-tools {
+        padding: 18px;
+        text-align: left;
+        border: 1px solid #dbeafe;
+        border-radius: 14px;
+        background: #f8fbff;
+    }
+
+    .invitation-tools-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .invitation-tool-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    .copy-status {
+        display: none;
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 0.88rem;
+    }
+
+    .copy-status-success {
+        display: block;
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+    }
+
+    .copy-status-error {
+        display: block;
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
+    .meeting-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 9px;
+    }
+
+    .meeting-actions form {
+        margin: 0;
+    }
+
+    @media (max-width: 576px) {
+        .scheduled-success-card {
+            padding: 22px;
+        }
+
+        .summary-row {
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .summary-row strong {
+            text-align: left;
+        }
+
+        .invitation-tool-buttons,
+        .invitation-tool-buttons .btn,
+        .meeting-actions,
+        .meeting-actions form,
+        .meeting-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<script>
+    function getMeetingJoinUrl() {
+        const joinPath = "{% url 'join_meeting' %}";
+
+        const joinUrl = new URL(
+            joinPath,
+            window.location.origin
+        );
+
+        joinUrl.searchParams.set(
+            "code",
+            "{{ meeting.meeting_code|escapejs }}"
+        );
+
+        return joinUrl.toString();
+    }
+
+
+    function showCopyStatus(message, isSuccess) {
+        const statusElement = document.getElementById(
+            "copyInvitationStatus"
+        );
+
+        statusElement.textContent = message;
+
+        statusElement.classList.remove(
+            "copy-status-success",
+            "copy-status-error"
+        );
+
+        if (isSuccess) {
+            statusElement.classList.add(
+                "copy-status-success"
+            );
+        } else {
+            statusElement.classList.add(
+                "copy-status-error"
+            );
+        }
+    }
+
+
+    function copyTextToClipboard(
+        text,
+        successMessage
+    ) {
+        navigator.clipboard
+            .writeText(text)
+            .then(function () {
+                showCopyStatus(
+                    successMessage,
+                    true
+                );
+            })
+            .catch(function () {
+                showCopyStatus(
+                    "Could not copy the information. "
+                    + "Please copy it manually.",
+                    false
+                );
+            });
+    }
+
+
+    function copyScheduledMeetingCode() {
+        const meetingCode = document
+            .getElementById(
+                "scheduledMeetingCode"
+            )
+            .textContent
+            .trim();
+
+        copyTextToClipboard(
+            meetingCode,
+            "Meeting code copied: "
+            + meetingCode
+        );
+    }
+
+
+    function copyFullMeetingInvitation() {
+        const joinUrl = getMeetingJoinUrl();
+
+        const meetingTitle =
+            "{{ meeting.title|escapejs }}";
+
+        const meetingCode =
+            "{{ meeting.meeting_code|escapejs }}";
+
+        const meetingDate =
+            "{{ meeting.scheduled_at|date:'d M Y'|escapejs }}";
+
+        const meetingTime =
+            "{{ meeting.scheduled_at|date:'h:i A'|escapejs }}";
+
+        const duration =
+            "{{ meeting.duration_minutes|escapejs }} minutes";
+
+        const timezoneName =
+            "{{ current_timezone|escapejs }}";
+
+        const passwordStatus =
+            "{% if meeting.has_password %}Required{% else %}Not required{% endif %}";
+
+        const waitingRoomStatus =
+            "{% if meeting.waiting_room_enabled %}Enabled{% else %}Disabled{% endif %}";
+
+        const description =
+            "{{ meeting.description|default:''|escapejs }}";
+
+        const invitationLines = [
+            "You are invited to a MeetVerse meeting.",
+            "",
+            "Title: " + meetingTitle,
+            "Date: " + meetingDate,
+            "Time: " + meetingTime,
+            "Timezone: " + timezoneName,
+            "Duration: " + duration,
+            "",
+            "Meeting code: " + meetingCode,
+            "Password: " + passwordStatus,
+            "Waiting room: " + waitingRoomStatus,
+            "",
+            "Join meeting:",
+            joinUrl
+        ];
+
+        if (description.trim()) {
+            invitationLines.push(
+                "",
+                "Description:",
+                description.trim()
+            );
+        }
+
+        invitationLines.push(
+            "",
+            "Please join a few minutes before "
+            + "the scheduled time."
+        );
+
+        const invitationText =
+            invitationLines.join("\n");
+
+        copyTextToClipboard(
+            invitationText,
+            "Full meeting invitation copied."
+        );
+    }
+
+
+    function confirmStartScheduledMeeting() {
+        return window.confirm(
+            "Start this meeting now? "
+            + "Participants will be allowed to join."
+        );
+    }
+</script>
+{% endblock %}

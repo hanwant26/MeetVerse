@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ meeting.title }} | MeetVerse
+{% endblock %}
+
+{% block content %}
+<section class="meeting-room-section">
+    <div class="container-fluid py-4">
+
+        <div class="meeting-topbar mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">
+                    {{ meeting.title }}
+                </h2>
+
+                <p class="text-secondary mb-0">
+                    Meeting code:
+
+                    <strong id="meetingCode">
+                        {{ meeting.meeting_code }}
+                    </strong>
+                </p>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <button type="button" class="btn btn-outline-primary" onclick="copyMeetingCode()">
+                    Copy Code
+                </button>
+
+                {% if is_host %}
+                <span class="badge bg-primary host-badge">
+                    You are the host
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-xl-9 col-lg-8">
+                <div class="video-room">
+
+                    <div id="connectionStatus" class="connection-status connection-status-info">
+                        Connecting to the meeting…
+                    </div>
+
+                    <div id="videoGrid" class="video-grid">
+                        <div id="localParticipantTile" class="participant-video-tile">
+                            <video id="localVideo" class="participant-video local-participant-video" autoplay muted
+                                playsinline hidden>
+                                Your browser does not support video.
+                            </video>
+
+                            <div id="localVideoPlaceholder" class="participant-placeholder">
+                                <div class="video-avatar">
+                                    {{ user.username|first|upper }}
+                                </div>
+
+                                <p class="mb-0">
+                                    Camera is off
+                                </p>
+                            </div>
+
+                            <div class="participant-video-label">
+                                <span>
+                                    {{ user.username }} (You)
+                                </span>
+
+                                <span id="localMediaState" class="media-state">
+                                    🔇 🚫
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="room-controls">
+                        <button type="button" id="microphoneButton" class="meeting-control-button"
+                            title="Turn microphone on" aria-label="Toggle microphone" aria-pressed="false" disabled>
+                            <span id="microphoneIcon">
+                                🔇
+                            </span>
+                        </button>
+
+                        <button type="button" id="cameraButton" class="meeting-control-button" title="Turn camera on"
+                            aria-label="Toggle camera" aria-pressed="false" disabled>
+                            <span id="cameraIcon">
+                                🚫
+                            </span>
+                        </button>
+
+                        <button type="button" id="screenShareButton" class="meeting-control-button" title="Share screen"
+                            aria-label="Toggle screen sharing" aria-pressed="false" disabled>
+                            <span id="screenShareIcon">
+                                🖥️
+                            </span>
+                        </button>
+
+                        <button type="button" id="raiseHandButton" class="meeting-control-button" title="Raise hand"
+                            aria-label="Raise or lower hand" aria-pressed="false" disabled>
+                            <span id="raiseHandIcon">
+                                ✋
+                            </span>
+                        </button>
+
+                        <button type="button" id="chatButton" class="meeting-control-button chat-control-button"
+                            title="Open meeting chat" aria-label="Open meeting chat" disabled>
+                            💬
+
+                            <span id="chatUnreadBadge" class="chat-unread-badge" hidden></span>
+                        </button>
+
+                        <a href="{% url 'dashboard' %}" id="leaveMeetingButton" class="leave-control"
+                            title="Leave meeting" aria-label="Leave meeting">
+                            ☎
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4">
+
+                {% if is_host %}
+                <div class="meeting-side-panel mb-4">
+                    <div class="panel-heading">
+                        <h4 class="fw-bold mb-0">
+                            Waiting Room
+                        </h4>
+
+                        <span class="badge bg-warning text-dark">
+                            {{ pending_participants|length }}
+                        </span>
+                    </div>
+
+                    {% if pending_participants %}
+                    <div class="participant-list mt-3">
+                        {% for participant in pending_participants %}
+                        <div class="participant-item">
+                            <div>
+                                <strong>
+                                    {{ participant.display_name }}
+                                </strong>
+
+                                <div class="small text-secondary">
+                                    Waiting for approval
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-1">
+                                <form method="post"
+                                    action="{% url 'admit_participant' meeting.meeting_code participant.id %}">
+                                    {% csrf_token %}
+
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Admit
+                                    </button>
+                                </form>
+
+                                <form method="post"
+                                    action="{% url 'reject_participant' meeting.meeting_code participant.id %}">
+                                    {% csrf_token %}
+
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-secondary mt-3 mb-0">
+                        Nobody is waiting.
+                    </p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="meeting-side-panel">
+                    <div class="panel-heading">
+                        <h4 class="fw-bold mb-0">
+                            Participants
+                        </h4>
+
+                        <span class="badge bg-primary">
+                            {{ admitted_participants|length }}
+                        </span>
+                    </div>
+
+                    <div class="participant-list mt-3">
+                        {% for participant in admitted_participants %}
+                        <div class="participant-item">
+                            <div class="participant-name">
+                                <span class="small-avatar">
+                                    {{ participant.display_name|first|upper }}
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        {{ participant.display_name }}
+                                    </strong>
+
+                                    <div class="small text-secondary">
+                                        {{ participant.get_role_display }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <span title="Admitted participant">
+                                ●
+                            </span>
+                        </div>
+                        {% empty %}
+                        <p class="text-secondary">
+                            No participants yet.
+                        </p>
+                        {% endfor %}
+                    </div>
+
+                    <hr>
+
+                    <p class="mb-1 text-secondary">
+                        Status
+                    </p>
+
+                    <p>
+                        <span class="badge bg-success">
+                            {{ meeting.get_status_display }}
+                        </span>
+                    </p>
+
+                    <p class="mb-1 text-secondary">
+                        Waiting room
+                    </p>
+
+                    <p>
+                        {% if meeting.waiting_room_enabled %}
+                        Enabled
+                        {% else %}
+                        Disabled
+                        {% endif %}
+                    </p>
+
+                    <p class="mb-1 text-secondary">
+                        Password
+                    </p>
+
+                    <p class="mb-0">
+                        {% if meeting.has_password %}
+                        Required
+                        {% else %}
+                        Not required
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% include "meetings/host_controls.html" %}
+            </div>
+        </div>
+    </div>
+
+    <aside id="chatPanel" class="meeting-chat-panel" aria-hidden="true" hidden>
+        <div class="meeting-chat-header">
+            <div>
+                <h3 class="h5 fw-bold mb-0">
+                    Meeting Chat
+                </h3>
+
+                <small class="text-secondary">
+                    Messages are visible to everyone.
+                </small>
+            </div>
+
+            <button type="button" id="closeChatButton" class="btn-close" aria-label="Close meeting chat"></button>
+        </div>
+
+        <div id="chatMessages" class="meeting-chat-messages" aria-live="polite">
+            <div id="chatEmptyState" class="chat-empty-state">
+                <div class="chat-empty-icon">
+                    💬
+                </div>
+
+                <p class="mb-0">
+                    No messages yet.
+                </p>
+            </div>
+        </div>
+
+        <form id="chatForm" class="meeting-chat-form">
+            <label for="chatInput" class="visually-hidden">
+                Meeting message
+            </label>
+
+            <textarea id="chatInput" class="form-control" maxlength="1000" rows="2" placeholder="Type a message…"
+                required></textarea>
+
+            <button type="submit" class="btn btn-primary">
+                Send
+            </button>
+        </form>
+    </aside>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyMeetingCode() {
+        const meetingCode = document
+            .getElementById("meetingCode")
+            .textContent
+            .trim();
+
+        navigator.clipboard
+            .writeText(meetingCode)
+            .then(function () {
+                alert(
+                    "Meeting code copied: " +
+                    meetingCode
+                );
+            })
+            .catch(function () {
+                alert(
+                    "Could not copy the meeting code."
+                );
+            });
+    }
+
+
+    function confirmRemoveParticipant(name) {
+        return window.confirm(
+            "Remove " +
+            name +
+            " from this meeting?"
+        );
+    }
+
+
+    function confirmEndMeeting() {
+        return window.confirm(
+            "End this meeting for everyone? " +
+            "This action cannot be undone."
+        );
+    }
+
+
+    window.meetVerseConfig = {
+        tokenUrl:
+            "{% url 'livekit_token' meeting.meeting_code %}",
+
+        dashboardUrl:
+            "{% url 'dashboard' %}",
+
+        chatHistoryUrl:
+            "{% url 'chat_history' meeting.meeting_code %}",
+
+        saveChatUrl:
+            "{% url 'save_chat_message' meeting.meeting_code %}"
+    };
+
+
+    window.meetVerseLifecycle = {
+        leaveUrl:
+            "{% url 'leave_meeting' meeting.meeting_code %}",
+
+        dashboardUrl:
+            "{% url 'dashboard' %}"
+    };
+
+
+    window.meetVerseAttendance = {
+        meetingCode:
+            "{{ meeting.meeting_code }}",
+
+        joinUrl:
+            "{% url 'join_attendance' meeting.meeting_code %}",
+
+        leaveUrl:
+            "{% url 'leave_attendance' meeting.meeting_code %}"
+    };
+    window.meetVerseMeetingInfo = {
+        meetingCode:
+            "{{ meeting.meeting_code|escapejs }}",
+
+        startedAt:
+            "{{ meeting.started_at|date:'c'|escapejs }}"
+    };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+
+<script>
+    console.log(
+        "LiveKit loaded:",
+        typeof window.LivekitClient !== "undefined"
+    );
+</script>
+
+<script src="{% static 'js/meeting_room.js' %}?v=6"></script>
+
+<script src="{% static 'js/host_mute_sync.js' %}?v=1"></script>
+
+<script src="{% static 'js/attendance_tracking.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_features.js' %}?v=5"></script>
+
+<script src="{% static 'js/meeting_reactions.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_lifecycle.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_status_bar.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_layout_controls.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_network_quality.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_device_settings.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_shortcuts.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_notes.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_notes_shortcut_fix.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_picture_in_picture.js' %}?v=1"></script>
+
+<script src="{% static 'js/meeting_self_view.js' %}?v=2"></script>
+
+{% endblock %}

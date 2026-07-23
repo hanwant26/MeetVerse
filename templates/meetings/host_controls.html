@@ -1,0 +1,309 @@
+{% if is_host %}
+<div class="meeting-side-panel mt-4">
+    <div class="panel-heading">
+        <h4 class="fw-bold mb-0">
+            Host Controls
+        </h4>
+
+        {% if meeting.is_locked %}
+            <span class="badge bg-danger">
+                Locked
+            </span>
+        {% else %}
+            <span class="badge bg-success">
+                Open
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="mt-3">
+        <a
+            href="{% url 'attendance_report' meeting.meeting_code %}"
+            class="btn btn-outline-primary w-100 mb-2"
+        >
+            View Attendance Report
+        </a>
+
+
+        <!-- Lock or unlock meeting -->
+        <form
+            method="post"
+            action="{% url 'toggle_meeting_lock' meeting.meeting_code %}"
+            class="mb-2"
+            onsubmit="return confirmMeetingLockChange();"
+        >
+            {% csrf_token %}
+
+            {% if meeting.is_locked %}
+                <button
+                    type="submit"
+                    class="btn btn-outline-success w-100"
+                >
+                    🔓 Unlock Meeting
+                </button>
+            {% else %}
+                <button
+                    type="submit"
+                    class="btn btn-outline-dark w-100"
+                >
+                    🔒 Lock Meeting
+                </button>
+            {% endif %}
+        </form>
+
+
+        <!-- Enable or disable waiting room -->
+        <form
+            method="post"
+            action="{% url 'toggle_waiting_room' meeting.meeting_code %}"
+            class="mb-3"
+            onsubmit="return confirmWaitingRoomChange();"
+        >
+            {% csrf_token %}
+
+            {% if meeting.waiting_room_enabled %}
+                <button
+                    type="submit"
+                    class="btn btn-outline-warning w-100"
+                >
+                    🚪 Disable Waiting Room
+                </button>
+            {% else %}
+                <button
+                    type="submit"
+                    class="btn btn-outline-primary w-100"
+                >
+                    🚪 Enable Waiting Room
+                </button>
+            {% endif %}
+        </form>
+
+
+        <!-- Lock status -->
+        {% if meeting.is_locked %}
+            <div class="host-setting-message setting-locked">
+                <strong>
+                    Meeting locked
+                </strong>
+
+                <div>
+                    New participants cannot join until
+                    the meeting is unlocked.
+                </div>
+            </div>
+        {% else %}
+            <div class="host-setting-message setting-open">
+                <strong>
+                    Meeting open
+                </strong>
+
+                <div>
+                    Participants with the correct code
+                    and password may join.
+                </div>
+            </div>
+        {% endif %}
+
+
+        <!-- Waiting-room status -->
+        {% if meeting.waiting_room_enabled %}
+            <div class="host-setting-message setting-waiting">
+                <strong>
+                    Waiting room enabled
+                </strong>
+
+                <div>
+                    New participants require approval
+                    before entering.
+                </div>
+            </div>
+        {% else %}
+            <div class="host-setting-message setting-direct">
+                <strong>
+                    Direct joining enabled
+                </strong>
+
+                <div>
+                    Participants enter immediately after
+                    passing the meeting checks.
+                </div>
+            </div>
+        {% endif %}
+
+
+        <hr>
+
+        <h6 class="fw-bold mb-3">
+            Manage Participants
+        </h6>
+
+        {% for participant in admitted_participants %}
+            {% if participant.user_id != user.id %}
+                <div class="host-participant-control mb-3">
+                    <div class="participant-control-info mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="small-avatar">
+                                {{ participant.display_name|first|upper }}
+                            </span>
+
+                            <div>
+                                <strong>
+                                    {{ participant.display_name }}
+                                </strong>
+
+                                <div class="small text-secondary">
+                                    {{ participant.get_role_display }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <form
+                            method="post"
+                            action="{% url 'mute_participant_microphone' meeting.meeting_code participant.id %}"
+                            onsubmit="return window.confirm('Mute {{ participant.display_name|escapejs }} microphone?');"
+                            class="flex-grow-1"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-warning btn-sm w-100"
+                            >
+                                🔇 Mute
+                            </button>
+                        </form>
+
+                        <form
+                            method="post"
+                            action="{% url 'remove_participant' meeting.meeting_code participant.id %}"
+                            onsubmit="return window.confirm('Remove {{ participant.display_name|escapejs }} from this meeting?');"
+                            class="flex-grow-1"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-danger btn-sm w-100"
+                            >
+                                Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        {% empty %}
+            <p class="small text-secondary">
+                No participants are currently available.
+            </p>
+        {% endfor %}
+
+        <hr>
+
+        <form
+            method="post"
+            action="{% url 'end_meeting' meeting.meeting_code %}"
+            onsubmit="return window.confirm('End this meeting for everyone? This action cannot be undone.');"
+        >
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="btn btn-danger w-100"
+            >
+                End Meeting for Everyone
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .host-participant-control {
+        padding: 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+    .participant-control-info {
+        min-width: 0;
+    }
+
+    .host-participant-control form {
+        min-width: 90px;
+    }
+
+    .host-participant-control .btn {
+        white-space: nowrap;
+    }
+
+    .host-setting-message {
+        margin-bottom: 10px;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 0.88rem;
+    }
+
+    .host-setting-message strong {
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .setting-locked {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
+    .setting-open {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+    }
+
+    .setting-waiting {
+        border: 1px solid #fde68a;
+        background: #fffbeb;
+        color: #92400e;
+    }
+
+    .setting-direct {
+        border: 1px solid #bfdbfe;
+        background: #eff6ff;
+        color: #1e40af;
+    }
+</style>
+
+<script>
+    function confirmMeetingLockChange() {
+        {% if meeting.is_locked %}
+            return window.confirm(
+                "Unlock this meeting? "
+                + "New participants will be able to join."
+            );
+        {% else %}
+            return window.confirm(
+                "Lock this meeting? "
+                + "New participants will not be able to join."
+            );
+        {% endif %}
+    }
+
+
+    function confirmWaitingRoomChange() {
+        {% if meeting.waiting_room_enabled %}
+            return window.confirm(
+                "Disable the waiting room? "
+                + "People already waiting will be admitted, "
+                + "and future participants will join directly."
+            );
+        {% else %}
+            return window.confirm(
+                "Enable the waiting room? "
+                + "Future participants will require your approval."
+            );
+        {% endif %}
+    }
+</script>
+{% endif %}
