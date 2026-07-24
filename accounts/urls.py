@@ -4,6 +4,9 @@ from django.contrib.auth import (
 from django.urls import path
 
 from . import views
+from .forms import (
+    UsernameOrEmailAuthenticationForm,
+)
 
 
 urlpatterns = [
@@ -19,6 +22,10 @@ urlpatterns = [
             template_name=(
                 "registration/login.html"
             ),
+            authentication_form=(
+                UsernameOrEmailAuthenticationForm
+            ),
+            redirect_authenticated_user=True,
         ),
         name="login",
     ),

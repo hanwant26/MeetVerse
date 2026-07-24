@@ -8,23 +8,19 @@ Login | MeetVerse
 <section class="auth-section">
     <div class="auth-card shadow">
         <div class="text-center mb-4">
+            <div class="display-5 mb-3">
+                👤
+            </div>
+
             <h1 class="fw-bold">
                 Welcome Back
             </h1>
 
-            <p class="text-secondary">
-                Login to continue to MeetVerse.
+            <p class="text-secondary mb-0">
+                Log in using your username
+                or registered email.
             </p>
         </div>
-
-        {% if form.errors %}
-            <div
-                class="alert alert-danger"
-                role="alert"
-            >
-                Incorrect username or password.
-            </div>
-        {% endif %}
 
         <form method="post">
             {% csrf_token %}
@@ -37,70 +33,69 @@ Login | MeetVerse
                 >
             {% endif %}
 
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <div>
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div class="mb-3">
                 <label
-                    for="id_username"
+                    for="{{ form.username.id_for_label }}"
                     class="form-label"
                 >
-                    Username
+                    Username or Email
                 </label>
 
-                <input
-                    type="text"
-                    name="username"
-                    id="id_username"
-                    class="form-control"
-                    value="{{ form.username.value|default:'' }}"
-                    placeholder="Enter your username"
-                    autocomplete="username"
-                    autofocus
-                    required
-                >
+                {{ form.username }}
+
+                {% for error in form.username.errors %}
+                    <div class="text-danger small mt-2">
+                        {{ error }}
+                    </div>
+                {% endfor %}
             </div>
 
-            <div class="mb-2">
-                <div
-                    class="d-flex align-items-center justify-content-between gap-3"
+            <div class="mb-3">
+                <label
+                    for="{{ form.password.id_for_label }}"
+                    class="form-label"
                 >
-                    <label
-                        for="id_password"
-                        class="form-label"
-                    >
-                        Password
-                    </label>
+                    Password
+                </label>
 
-                    <a
-                        href="{% url 'password_reset' %}"
-                        class="small text-decoration-none"
-                    >
-                        Forgot password?
-                    </a>
-                </div>
+                {{ form.password }}
 
-                <input
-                    type="password"
-                    name="password"
-                    id="id_password"
-                    class="form-control"
-                    placeholder="Enter your password"
-                    autocomplete="current-password"
-                    required
-                >
+                {% for error in form.password.errors %}
+                    <div class="text-danger small mt-2">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="text-end mb-3">
+                <a href="{% url 'password_reset' %}">
+                    Forgot password?
+                </a>
             </div>
 
             <button
                 type="submit"
-                class="btn btn-primary btn-lg w-100 mt-4"
+                class="btn btn-primary btn-lg w-100"
             >
                 Login
             </button>
         </form>
 
         <p class="text-center mt-4 mb-0">
-            Do not have an account?
+            Don’t have an account?
 
             <a href="{% url 'register' %}">
-                Register
+                Create account
             </a>
         </p>
     </div>

@@ -1,14 +1,120 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.contrib.auth.forms import (
+    AuthenticationForm,
     UserCreationForm,
 )
+from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import (
     validate_password,
 )
-from django.core.exceptions import (
-    ValidationError,
-)
+from django.core.exceptions import ValidationError
+
+
+class UsernameOrEmailAuthenticationForm(
+    AuthenticationForm
+):
+    """
+    Allow users to log in using either their
+    username or their registered email address.
+    """
+
+    username = forms.CharField(
+        label="Username or Email",
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": (
+                    "Enter username or email"
+                ),
+                "autocomplete": "username",
+                "autofocus": True,
+            }
+        ),
+    )
+
+    password = forms.CharField(
+        label="Password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": (
+                    "Enter your password"
+                ),
+                "autocomplete": (
+                    "current-password"
+                ),
+            }
+        ),
+    )
+
+    error_messages = {
+        "invalid_login": (
+            "Enter a correct username or email "
+            "and password."
+        ),
+        "inactive": (
+            "This account is inactive."
+        ),
+    }
+
+    def clean(self):
+        identifier = self.cleaned_data.get(
+            "username"
+        )
+
+        password = self.cleaned_data.get(
+            "password"
+        )
+
+        if identifier and password:
+            identifier = identifier.strip()
+
+            login_username = identifier
+
+            username_user = (
+                User.objects
+                .filter(
+                    username=identifier
+                )
+                .first()
+            )
+
+            if username_user is not None:
+                login_username = (
+                    username_user.username
+                )
+
+            else:
+                email_users = (
+                    User.objects
+                    .filter(
+                        email__iexact=identifier
+                    )
+                )
+
+                if email_users.count() == 1:
+                    login_username = (
+                        email_users
+                        .first()
+                        .username
+                    )
+
+            self.user_cache = authenticate(
+                self.request,
+                username=login_username,
+                password=password,
+            )
+
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+
+            self.confirm_login_allowed(
+                self.user_cache
+            )
+
+        return self.cleaned_data
 
 
 class RegisterForm(UserCreationForm):
@@ -57,9 +163,7 @@ class RegisterForm(UserCreationForm):
                 "placeholder": (
                     "Choose a username"
                 ),
-                "autocomplete": (
-                    "username"
-                ),
+                "autocomplete": "username",
             }
         )
 
@@ -111,9 +215,7 @@ class RegisterForm(UserCreationForm):
         return email
 
 
-class ForgotPasswordOTPForm(
-    forms.Form
-):
+class ForgotPasswordOTPForm(forms.Form):
     """
     Request a password-reset OTP.
     """
@@ -152,9 +254,15 @@ class VerifyPasswordResetOTPForm(
         max_length=6,
         widget=forms.TextInput(
             attrs={
-                "class": "form-control text-center",
-                "placeholder": "Enter 6-digit OTP",
-                "autocomplete": "one-time-code",
+                "class": (
+                    "form-control text-center"
+                ),
+                "placeholder": (
+                    "Enter 6-digit OTP"
+                ),
+                "autocomplete": (
+                    "one-time-code"
+                ),
                 "inputmode": "numeric",
                 "pattern": "[0-9]{6}",
                 "maxlength": "6",
@@ -170,7 +278,9 @@ class VerifyPasswordResetOTPForm(
                 "placeholder": (
                     "Enter new password"
                 ),
-                "autocomplete": "new-password",
+                "autocomplete": (
+                    "new-password"
+                ),
             }
         ),
     )
@@ -182,7 +292,9 @@ class VerifyPasswordResetOTPForm(
                 "placeholder": (
                     "Confirm new password"
                 ),
-                "autocomplete": "new-password",
+                "autocomplete": (
+                    "new-password"
+                ),
             }
         ),
     )
@@ -230,7 +342,10 @@ class VerifyPasswordResetOTPForm(
         if password1 != password2:
             self.add_error(
                 "new_password2",
-                "The two passwords do not match.",
+                (
+                    "The two passwords do not "
+                    "match."
+                ),
             )
 
             return cleaned_data
