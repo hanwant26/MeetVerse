@@ -447,3 +447,68 @@ select:focus {
         font-size: 23px;
     }
 }
+/*
+Fix white headings and selected sidebar text
+in the MeetVerse administrator interface.
+*/
+
+/* Selected application heading */
+#nav-sidebar .current-app .section,
+#nav-sidebar .current-app .section:link,
+#nav-sidebar .current-app .section:visited {
+    background:
+        linear-gradient(
+            135deg,
+            #5b5df0,
+            #4446d8
+        ) !important;
+
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+/* Selected model row */
+#nav-sidebar .current-model {
+    background: #e7e7ff !important;
+}
+
+#nav-sidebar .current-model a,
+#nav-sidebar .current-model a:link,
+#nav-sidebar .current-model a:visited {
+    color: #312e81 !important;
+    font-weight: 700;
+}
+
+/* Main page heading in light mode */
+:root #content > h1,
+:root #content-main > h1,
+html[data-theme="light"] #content > h1,
+html[data-theme="light"] #content-main > h1 {
+    color: #172033 !important;
+}
+
+/* Form and list page headings */
+:root .change-form #content h1,
+:root .change-list #content h1,
+html[data-theme="light"] .change-form #content h1,
+html[data-theme="light"] .change-list #content h1 {
+    color: #172033 !important;
+}
+
+/* Keep headings visible in dark mode */
+html[data-theme="dark"] #content > h1,
+html[data-theme="dark"] #content-main > h1,
+html[data-theme="dark"] .change-form #content h1,
+html[data-theme="dark"] .change-list #content h1 {
+    color: #f9fafb !important;
+}
+
+/* Selected links must remain readable */
+#nav-sidebar a:focus,
+#nav-sidebar a:active {
+    outline: none;
+}
+
+#nav-sidebar .current-model a:hover {
+    color: #1e1b4b !important;
+}
