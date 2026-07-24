@@ -369,15 +369,25 @@ EMAIL_BACKEND = os.getenv(
 )
 
 
-RESEND_API_KEY = os.getenv(
-    "RESEND_API_KEY",
+MAILJET_API_KEY = os.getenv(
+    "MAILJET_API_KEY",
     "",
-)
+).strip()
+
+
+MAILJET_SECRET_KEY = os.getenv(
+    "MAILJET_SECRET_KEY",
+    "",
+).strip()
 
 
 ANYMAIL = {
-    "RESEND_API_KEY": (
-        RESEND_API_KEY
+    "MAILJET_API_KEY": (
+        MAILJET_API_KEY
+    ),
+
+    "MAILJET_SECRET_KEY": (
+        MAILJET_SECRET_KEY
     ),
 }
 
@@ -391,37 +401,11 @@ DEFAULT_FROM_EMAIL = os.getenv(
 )
 
 
-EMAIL_HOST = os.getenv(
-    "EMAIL_HOST",
-    "",
+SERVER_EMAIL = os.getenv(
+    "SERVER_EMAIL",
+    DEFAULT_FROM_EMAIL,
 )
 
-EMAIL_PORT = int(
-    os.getenv(
-        "EMAIL_PORT",
-        "587",
-    )
-)
-
-EMAIL_HOST_USER = os.getenv(
-    "EMAIL_HOST_USER",
-    "",
-)
-
-EMAIL_HOST_PASSWORD = os.getenv(
-    "EMAIL_HOST_PASSWORD",
-    "",
-)
-
-EMAIL_USE_TLS = env_bool(
-    "EMAIL_USE_TLS",
-    True,
-)
-
-EMAIL_USE_SSL = env_bool(
-    "EMAIL_USE_SSL",
-    False,
-)
 
 EMAIL_TIMEOUT = int(
     os.getenv(
