@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if subtitle %}
+        {{ subtitle }} |
+    {% endif %}
+
+    {% if title %}
+        {{ title }} |
+    {% endif %}
+
+    MeetVerse Administration
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/admin_custom.css' %}"
+    >
+{% endblock %}
+
+{% block branding %}
+<div class="meetverse-admin-brand">
+    <a
+        href="{% url 'admin:index' %}"
+        class="meetverse-admin-logo"
+    >
+        <span class="meetverse-logo-icon">
+            MV
+        </span>
+
+        <span class="meetverse-logo-text">
+            <strong>MeetVerse</strong>
+            <small>Administration</small>
+        </span>
+    </a>
+</div>
+{% endblock %}
+
+{% block nav-global %}
+<div class="meetverse-view-site">
+    <a href="/">
+        View MeetVerse Website
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,449 @@
+/*
+MeetVerse custom Django administration design
+*/
+
+:root,
+html[data-theme="light"] {
+    --primary: #5b5df0;
+    --secondary: #4345c7;
+    --accent: #ffffff;
+
+    --primary-fg: #ffffff;
+
+    --body-fg: #172033;
+    --body-bg: #f4f6fb;
+    --body-quiet-color: #667085;
+    --body-loud-color: #101828;
+
+    --header-color: #ffffff;
+    --header-branding-color: #ffffff;
+    --header-bg: #111827;
+    --header-link-color: #ffffff;
+
+    --breadcrumbs-fg: #dfe3ff;
+    --breadcrumbs-link-fg: #ffffff;
+    --breadcrumbs-bg: #252761;
+
+    --link-fg: #4f46e5;
+    --link-hover-color: #3730a3;
+    --link-selected-fg: #312e81;
+
+    --hairline-color: #e4e7ec;
+    --border-color: #d0d5dd;
+
+    --error-fg: #b42318;
+
+    --message-success-bg: #ecfdf3;
+    --message-warning-bg: #fffaeb;
+    --message-error-bg: #fef3f2;
+
+    --darkened-bg: #eef1f7;
+    --selected-bg: #e7e7ff;
+    --selected-row: #f1f1ff;
+
+    --button-fg: #ffffff;
+    --button-bg: #5b5df0;
+    --button-hover-bg: #4446d8;
+
+    --default-button-bg: #5b5df0;
+    --default-button-hover-bg: #4446d8;
+
+    --close-button-bg: #667085;
+    --close-button-hover-bg: #475467;
+
+    --delete-button-bg: #d92d20;
+    --delete-button-hover-bg: #b42318;
+
+    --object-tools-fg: #ffffff;
+    --object-tools-bg: #5b5df0;
+    --object-tools-hover-bg: #4446d8;
+}
+
+html[data-theme="dark"] {
+    --primary: #818cf8;
+    --secondary: #6366f1;
+    --accent: #ffffff;
+
+    --body-fg: #e5e7eb;
+    --body-bg: #111827;
+    --body-quiet-color: #9ca3af;
+    --body-loud-color: #ffffff;
+
+    --header-color: #ffffff;
+    --header-branding-color: #ffffff;
+    --header-bg: #090e1a;
+    --header-link-color: #ffffff;
+
+    --breadcrumbs-fg: #dfe3ff;
+    --breadcrumbs-link-fg: #ffffff;
+    --breadcrumbs-bg: #252761;
+
+    --link-fg: #a5b4fc;
+    --link-hover-color: #c7d2fe;
+    --link-selected-fg: #ffffff;
+
+    --hairline-color: #374151;
+    --border-color: #374151;
+
+    --darkened-bg: #182131;
+    --selected-bg: #252761;
+    --selected-row: #1f2937;
+}
+
+body {
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+#header {
+    min-height: 74px;
+    padding: 0 26px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 18px rgba(16, 24, 40, 0.18);
+}
+
+#branding {
+    display: flex;
+    align-items: center;
+}
+
+.meetverse-admin-brand {
+    display: flex;
+    align-items: center;
+}
+
+.meetverse-admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.meetverse-admin-logo:hover {
+    color: #ffffff !important;
+}
+
+.meetverse-logo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        linear-gradient(
+            135deg,
+            #7c7eff,
+            #4f46e5
+        );
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow:
+        0 8px 20px
+        rgba(79, 70, 229, 0.35);
+}
+
+.meetverse-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.meetverse-logo-text strong {
+    font-size: 21px;
+    font-weight: 750;
+    letter-spacing: -0.4px;
+}
+
+.meetverse-logo-text small {
+    margin-top: 3px;
+    color: #c7d2fe;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.meetverse-view-site {
+    margin-left: 20px;
+}
+
+.meetverse-view-site a {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 9px;
+    color: #ffffff !important;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.meetverse-view-site a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+#user-tools {
+    font-size: 13px;
+}
+
+#user-tools a {
+    border-bottom: 0;
+    text-decoration: none;
+}
+
+div.breadcrumbs {
+    padding: 13px 28px;
+    font-size: 13px;
+}
+
+#content {
+    padding: 28px;
+}
+
+.meetverse-dashboard-heading {
+    margin-bottom: 8px;
+    padding: 25px 28px;
+    border: 1px solid var(--hairline-color);
+    border-radius: 16px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(91, 93, 240, 0.12),
+            rgba(124, 126, 255, 0.04)
+        );
+}
+
+.meetverse-dashboard-heading h1 {
+    margin: 0;
+    color: var(--body-loud-color);
+    font-size: 28px;
+    font-weight: 750;
+    letter-spacing: -0.6px;
+}
+
+.meetverse-dashboard-heading p {
+    margin: 9px 0 0;
+    color: var(--body-quiet-color);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.module {
+    overflow: hidden;
+    border: 1px solid var(--hairline-color);
+    border-radius: 14px;
+    box-shadow:
+        0 5px 20px
+        rgba(16, 24, 40, 0.06);
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+    padding: 13px 16px;
+    background:
+        linear-gradient(
+            135deg,
+            #5b5df0,
+            #4446d8
+        );
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.dashboard .module table th {
+    width: 100%;
+}
+
+.dashboard .module table td {
+    white-space: nowrap;
+}
+
+.dashboard .module table tr {
+    transition: background 0.18s ease;
+}
+
+.dashboard .module table tr:hover {
+    background: var(--selected-row);
+}
+
+.dashboard .module table th,
+.dashboard .module table td {
+    padding: 13px 15px;
+}
+
+#nav-sidebar {
+    border-right: 1px solid var(--hairline-color);
+    background: var(--body-bg);
+}
+
+#nav-sidebar .current-app .section,
+#nav-sidebar .current-model {
+    background: var(--selected-bg);
+}
+
+#nav-filter {
+    margin: 14px 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+}
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+    min-height: 38px;
+    padding: 9px 16px;
+    border-radius: 9px;
+    font-weight: 650;
+    box-shadow: none;
+    transition:
+        transform 0.15s ease,
+        background 0.2s ease;
+}
+
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.submit-row input:hover,
+a.button:hover {
+    transform: translateY(-1px);
+}
+
+.object-tools a {
+    border-radius: 9px;
+    font-weight: 650;
+}
+
+input,
+textarea,
+select,
+.vTextField {
+    border-radius: 8px !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #6366f1 !important;
+    box-shadow:
+        0 0 0 3px
+        rgba(99, 102, 241, 0.14);
+    outline: none;
+}
+
+.login {
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(91, 93, 240, 0.22),
+            transparent 38%
+        ),
+        #f4f6fb;
+}
+
+.login #container {
+    overflow: hidden;
+    width: min(440px, calc(100% - 32px));
+    border: 1px solid #e4e7ec;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+        0 20px 55px
+        rgba(16, 24, 40, 0.15);
+}
+
+.login #header {
+    min-height: 92px;
+    justify-content: center;
+    padding: 18px 24px;
+}
+
+.login #content {
+    padding: 30px;
+}
+
+.login .form-row {
+    padding: 8px 0;
+}
+
+.login .form-row label {
+    margin-bottom: 7px;
+    color: #344054;
+    font-weight: 650;
+}
+
+.login .form-row input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+}
+
+.login .submit-row {
+    padding: 18px 0 0;
+}
+
+.login .submit-row input {
+    width: 100%;
+    min-height: 44px;
+}
+
+.messagelist li {
+    border-radius: 9px;
+}
+
+@media (max-width: 767px) {
+    #header {
+        min-height: 68px;
+        padding: 10px 16px;
+    }
+
+    .meetverse-logo-icon {
+        width: 39px;
+        height: 39px;
+        border-radius: 11px;
+    }
+
+    .meetverse-logo-text strong {
+        font-size: 18px;
+    }
+
+    .meetverse-logo-text small {
+        font-size: 9px;
+    }
+
+    .meetverse-view-site {
+        display: none;
+    }
+
+    #content {
+        padding: 18px 14px;
+    }
+
+    .meetverse-dashboard-heading {
+        padding: 20px;
+    }
+
+    .meetverse-dashboard-heading h1 {
+        font-size: 23px;
+    }
+}
