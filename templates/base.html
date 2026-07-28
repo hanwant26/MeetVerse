@@ -1,13 +1,18 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="description"
+        content="MeetVerse is a modern video-conferencing platform for secure online meetings."
     >
 
     <title>
@@ -16,8 +21,28 @@
         {% endblock %}
     </title>
 
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem(
+                "meetverse-theme"
+            );
+
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute(
+                    "data-theme",
+                    "dark"
+                );
+            }
+        })();
+    </script>
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
         rel="stylesheet"
     >
 
@@ -25,87 +50,262 @@
         rel="stylesheet"
         href="{% static 'css/style.css' %}"
     >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/premium.css' %}"
+    >
+
+    {% block extra_css %}
+    {% endblock %}
 </head>
 
-<body>
+<body class="mv-site-shell {% block body_class %}{% endblock %}">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
-        <div class="container">
-            <a
-                class="navbar-brand fw-bold fs-4"
-                href="{% url 'home' %}"
-            >
-                MeetVerse
-            </a>
-
-            <div class="ms-auto d-flex align-items-center gap-2">
-                {% if user.is_authenticated %}
-
-                    <a
-                        href="{% url 'dashboard' %}"
-                        class="btn btn-outline-light"
-                    >
-                        Dashboard
-                    </a>
-
-                    <span class="text-light d-none d-md-inline">
-                        {{ user.username }}
+    <!-- Premium Navigation -->
+    <header class="mv-site-header" id="site-header">
+        <nav class="navbar navbar-expand-lg mv-navbar">
+            <div class="container">
+                <a
+                    class="mv-brand"
+                    href="{% url 'home' %}"
+                    aria-label="MeetVerse home"
+                >
+                    <span class="mv-brand-mark">
+                        <i class="bi bi-camera-video-fill"></i>
                     </span>
 
-                    <form
-                        method="post"
-                        action="{% url 'logout' %}"
-                        class="d-inline"
-                    >
-                        {% csrf_token %}
+                    <span class="mv-brand-copy">
+                        <strong>MeetVerse</strong>
+                        <small>Connect beyond distance</small>
+                    </span>
+                </a>
 
+                <button
+                    class="navbar-toggler mv-navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#meetverseNavbar"
+                    aria-controls="meetverseNavbar"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <div
+                    class="collapse navbar-collapse"
+                    id="meetverseNavbar"
+                >
+                    <ul class="navbar-nav mx-auto mv-nav-links">
+                        <li class="nav-item">
+                            <a
+                                class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                                href="{% url 'home' %}"
+                            >
+                                Home
+                            </a>
+                        </li>
+
+                        {% if request.user.is_authenticated %}
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                                    href="{% url 'dashboard' %}"
+                                >
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link {% if request.resolver_match.url_name == 'create_meeting' %}active{% endif %}"
+                                    href="{% url 'create_meeting' %}"
+                                >
+                                    New Meeting
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link {% if request.resolver_match.url_name == 'join_meeting' %}active{% endif %}"
+                                    href="{% url 'join_meeting' %}"
+                                >
+                                    Join
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link"
+                                    href="#features"
+                                >
+                                    Features
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link"
+                                    href="#how-it-works"
+                                >
+                                    How It Works
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+
+                    <div class="mv-navbar-actions">
                         <button
-                            type="submit"
-                            class="btn btn-danger"
+                            type="button"
+                            class="mv-theme-toggle"
+                            id="theme-toggle"
+                            aria-label="Change appearance"
+                            title="Change appearance"
                         >
-                            Logout
+                            <i
+                                class="bi bi-moon-stars"
+                                id="theme-toggle-icon"
+                            ></i>
                         </button>
-                    </form>
 
-                {% else %}
+                        {% if request.user.is_authenticated %}
+                            <div class="dropdown">
+                                <button
+                                    class="mv-profile-trigger dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <span class="mv-profile-mini-avatar">
+                                        {{ request.user.username|first|upper }}
+                                    </span>
 
-                    <a
-                        href="{% url 'login' %}"
-                        class="btn btn-outline-light"
-                    >
-                        Login
-                    </a>
+                                    <span class="mv-profile-trigger-copy">
+                                        <strong>
+                                            {{ request.user.username }}
+                                        </strong>
 
-                    <a
-                        href="{% url 'register' %}"
-                        class="btn btn-primary"
-                    >
-                        Register
-                    </a>
+                                        <small>
+                                            My account
+                                        </small>
+                                    </span>
+                                </button>
 
-                {% endif %}
+                                <ul class="dropdown-menu dropdown-menu-end mv-profile-menu">
+                                    <li class="mv-profile-menu-header">
+                                        <strong>
+                                            {{ request.user.username }}
+                                        </strong>
+
+                                        <small>
+                                            {{ request.user.email|default:"MeetVerse member" }}
+                                        </small>
+                                    </li>
+
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'dashboard' %}"
+                                        >
+                                            <i class="bi bi-grid"></i>
+                                            Dashboard
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'create_meeting' %}"
+                                        >
+                                            <i class="bi bi-camera-video"></i>
+                                            Start meeting
+                                        </a>
+                                    </li>
+
+                                    {% if request.user.is_staff %}
+                                        <li>
+                                            <a
+                                                class="dropdown-item"
+                                                href="/admin/"
+                                            >
+                                                <i class="bi bi-shield-lock"></i>
+                                                Administration
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li>
+                                        <form
+                                            method="post"
+                                            action="{% url 'logout' %}"
+                                        >
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="dropdown-item mv-logout-item"
+                                            >
+                                                <i class="bi bi-box-arrow-right"></i>
+                                                Sign out
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        {% else %}
+                            <a
+                                href="{% url 'login' %}"
+                                class="btn mv-nav-login"
+                            >
+                                Log in
+                            </a>
+
+                            <a
+                                href="{% url 'register' %}"
+                                class="btn mv-nav-register"
+                            >
+                                Get started
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
+    <!-- Messages -->
     {% if messages %}
-        <div class="container pt-3">
+        <div class="container mv-message-container">
             {% for message in messages %}
                 <div
-                    class="
-                        alert
-                        {% if message.tags == 'error' %}
-                            alert-danger
-                        {% else %}
-                            alert-{{ message.tags|default:'info' }}
-                        {% endif %}
-                        alert-dismissible
-                        fade
-                        show
-                    "
+                    class="alert mv-alert alert-dismissible fade show"
                     role="alert"
                 >
-                    {{ message }}
+                    <span class="mv-alert-icon">
+                        {% if message.tags == "success" %}
+                            <i class="bi bi-check-circle-fill"></i>
+                        {% elif message.tags == "error" %}
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                        {% elif message.tags == "warning" %}
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle-fill"></i>
+                        {% endif %}
+                    </span>
+
+                    <span>
+                        {{ message }}
+                    </span>
 
                     <button
                         type="button"
@@ -118,19 +318,105 @@
         </div>
     {% endif %}
 
-    <main>
+    <!-- Main Content -->
+    <main class="mv-main-content">
         {% block content %}
         {% endblock %}
     </main>
+
+    <!-- Premium Footer -->
+    <footer class="mv-site-footer">
+        <div class="container">
+            <div class="mv-footer-main">
+                <div class="mv-footer-brand-area">
+                    <a
+                        class="mv-brand mv-footer-brand"
+                        href="{% url 'home' %}"
+                    >
+                        <span class="mv-brand-mark">
+                            <i class="bi bi-camera-video-fill"></i>
+                        </span>
+
+                        <span class="mv-brand-copy">
+                            <strong>MeetVerse</strong>
+                            <small>Connect beyond distance</small>
+                        </span>
+                    </a>
+
+                    <p>
+                        A modern platform for video meetings,
+                        collaboration, attendance and communication.
+                    </p>
+                </div>
+
+                <div class="mv-footer-links">
+                    <div>
+                        <h3>Platform</h3>
+
+                        <a href="{% url 'home' %}">
+                            Home
+                        </a>
+
+                        {% if request.user.is_authenticated %}
+                            <a href="{% url 'dashboard' %}">
+                                Dashboard
+                            </a>
+
+                            <a href="{% url 'create_meeting' %}">
+                                New meeting
+                            </a>
+
+                            <a href="{% url 'join_meeting' %}">
+                                Join meeting
+                            </a>
+                        {% else %}
+                            <a href="{% url 'register' %}">
+                                Create account
+                            </a>
+
+                            <a href="{% url 'login' %}">
+                                Log in
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <h3>Features</h3>
+
+                        <span>Video conferencing</span>
+                        <span>Screen sharing</span>
+                        <span>Meeting chat</span>
+                        <span>Attendance reports</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mv-footer-bottom">
+                <p>
+                    © <span data-current-year></span>
+                    MeetVerse. Built by Hanwant Singh.
+                </p>
+
+                <span>
+                    Secure communication. Better collaboration.
+                </span>
+            </div>
+        </div>
+    </footer>
 
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     ></script>
 
-    <script src="{% static 'js/main.js' %}"></script>
+    <script
+        src="{% static 'js/main.js' %}"
+    ></script>
+
+    <script
+        src="{% static 'js/premium_shell.js' %}"
+    ></script>
 
     {% block extra_js %}
     {% endblock %}
-
 </body>
 </html>

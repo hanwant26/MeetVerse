@@ -1,66 +1,402 @@
 {% extends "base.html" %}
 
 {% block title %}
-MeetVerse | Video Conferencing
+MeetVerse | Premium Video Conferencing
 {% endblock %}
 
 {% block content %}
-<section class="hero-section">
+
+<!-- Hero -->
+<section class="mv-home-hero">
     <div class="container">
-        <div class="row align-items-center min-vh-100">
-            <div class="col-lg-6">
-                <span class="badge bg-primary mb-3">
-                    Secure Video Conferencing
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <span class="mv-home-kicker">
+                    <i class="bi bi-stars"></i>
+                    Premium communication platform
                 </span>
 
-                <h1 class="display-3 fw-bold">
-                    Connect and collaborate from anywhere.
+                <h1 class="mv-home-title">
+                    Meetings that feel
+                    <span class="mv-gradient-text">
+                        closer, clearer and better.
+                    </span>
                 </h1>
 
-                <p class="lead text-secondary my-4">
-                    Create secure video meetings with screen sharing,
-                    live chat, waiting rooms and host controls.
+                <p class="mv-home-description">
+                    MeetVerse brings video meetings, screen
+                    sharing, chat, attendance, scheduling and
+                    host controls together in one modern platform.
                 </p>
 
-                <div class="d-flex flex-wrap gap-3">
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">
-                        Open Dashboard
-                    </a>
-                    {% else %}
-                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
-                        Get Started
-                    </a>
+                <div class="mv-home-actions">
+                    {% if request.user.is_authenticated %}
+                        <a
+                            href="{% url 'create_meeting' %}"
+                            class="btn mv-home-primary"
+                        >
+                            <i class="bi bi-camera-video-fill me-2"></i>
+                            Start a meeting
+                        </a>
 
-                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">
-                        Login
-                    </a>
+                        <a
+                            href="{% url 'dashboard' %}"
+                            class="btn mv-home-secondary"
+                        >
+                            Open dashboard
+                            <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    {% else %}
+                        <a
+                            href="{% url 'register' %}"
+                            class="btn mv-home-primary"
+                        >
+                            Create free account
+                            <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+
+                        <a
+                            href="{% url 'login' %}"
+                            class="btn mv-home-secondary"
+                        >
+                            Log in
+                        </a>
                     {% endif %}
+                </div>
+
+                <div class="mv-trust-row">
+                    <span>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Real-time communication
+                    </span>
+
+                    <span>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Secure account access
+                    </span>
+
+                    <span>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Responsive on every device
+                    </span>
                 </div>
             </div>
 
-            <div class="col-lg-6 mt-5 mt-lg-0">
-                <div class="meeting-preview shadow-lg">
-                    <div class="camera-area">
-                        <div class="user-avatar">
-                            M
+            <div class="col-lg-5">
+                <div class="mv-meeting-preview">
+                    <div class="mv-meeting-preview-header">
+                        <div>
+                            <strong>MeetVerse Room</strong>
                         </div>
 
-                        <h3>MeetVerse Meeting</h3>
-
-                        <p>Ready to connect</p>
+                        <div class="mv-meeting-preview-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
                     </div>
 
-                    <div class="meeting-controls">
-                        <button title="Microphone">🎤</button>
-                        <button title="Camera">📹</button>
-                        <button title="Screen Share">🖥️</button>
-                        <button title="Chat">💬</button>
-                        <button class="end-call" title="End Call">☎</button>
+                    <div class="mv-meeting-preview-grid">
+                        <div class="mv-preview-participant main">
+                            <div class="mv-preview-person">
+                                <div class="mv-preview-person-avatar">
+                                    MV
+                                </div>
+
+                                <span>
+                                    Meeting host
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mv-preview-participant">
+                            <div class="mv-preview-person small">
+                                <div class="mv-preview-person-avatar">
+                                    A
+                                </div>
+
+                                <span>
+                                    Participant
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mv-preview-participant">
+                            <div class="mv-preview-person small">
+                                <div class="mv-preview-person-avatar">
+                                    S
+                                </div>
+
+                                <span>
+                                    Participant
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mv-meeting-preview-controls">
+                        <span>
+                            <i class="bi bi-mic-fill"></i>
+                        </span>
+
+                        <span>
+                            <i class="bi bi-camera-video-fill"></i>
+                        </span>
+
+                        <span>
+                            <i class="bi bi-chat-dots-fill"></i>
+                        </span>
+
+                        <span>
+                            <i class="bi bi-display-fill"></i>
+                        </span>
+
+                        <span>
+                            <i class="bi bi-people-fill"></i>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Features -->
+<section
+    class="mv-home-section mv-home-section-soft"
+    id="features"
+>
+    <div class="container">
+        <div class="mv-section-heading">
+            <span>
+                Everything in one place
+            </span>
+
+            <h2>
+                Built for productive online meetings
+            </h2>
+
+            <p>
+                Every important meeting tool is organised
+                inside a clean, modern and easy-to-use platform.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-xl-4">
+                <div class="mv-feature-card">
+                    <span class="mv-feature-icon">
+                        <i class="bi bi-camera-video-fill"></i>
+                    </span>
+
+                    <h3>
+                        Video and Audio
+                    </h3>
+
+                    <p>
+                        Connect through real-time video and
+                        audio with participant media controls.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="mv-feature-card">
+                    <span class="mv-feature-icon">
+                        <i class="bi bi-display-fill"></i>
+                    </span>
+
+                    <h3>
+                        Screen Sharing
+                    </h3>
+
+                    <p>
+                        Share presentations, browser tabs and
+                        your complete screen during meetings.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="mv-feature-card">
+                    <span class="mv-feature-icon">
+                        <i class="bi bi-chat-square-text-fill"></i>
+                    </span>
+
+                    <h3>
+                        Meeting Chat
+                    </h3>
+
+                    <p>
+                        Send persistent messages, reactions
+                        and updates without leaving the room.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="mv-feature-card">
+                    <span class="mv-feature-icon">
+                        <i class="bi bi-calendar-event-fill"></i>
+                    </span>
+
+                    <h3>
+                        Smart Scheduling
+                    </h3>
+
+                    <p>
+                        Plan upcoming meetings with date,
+                        time, duration and calendar invitations.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="mv-feature-card">
+                    <span class="mv-feature-icon">
+                        <i class="bi bi-clipboard-data-fill"></i>
+                    </span>
+
+                    <h3>
+                        Attendance Reports
+                    </h3>
+
+                    <p>
+                        Track meeting attendance and export
+                        participant records for later use.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="mv-feature-card">
+                    <span class="mv-feature-icon">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </span>
+
+                    <h3>
+                        Host Protection
+                    </h3>
+
+                    <p>
+                        Use waiting rooms, meeting passwords,
+                        locks and participant moderation tools.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section
+    class="mv-home-section"
+    id="how-it-works"
+>
+    <div class="container">
+        <div class="mv-section-heading">
+            <span>
+                Simple workflow
+            </span>
+
+            <h2>
+                Start collaborating in three steps
+            </h2>
+
+            <p>
+                MeetVerse keeps every stage of online
+                communication straightforward and organised.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="mv-step-card">
+                    <span class="mv-step-number">
+                        01
+                    </span>
+
+                    <h3>
+                        Create your account
+                    </h3>
+
+                    <p>
+                        Register securely and access your
+                        personal MeetVerse workspace.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="mv-step-card">
+                    <span class="mv-step-number">
+                        02
+                    </span>
+
+                    <h3>
+                        Start or schedule
+                    </h3>
+
+                    <p>
+                        Launch an instant meeting or create
+                        one for a future date and time.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="mv-step-card">
+                    <span class="mv-step-number">
+                        03
+                    </span>
+
+                    <h3>
+                        Invite and connect
+                    </h3>
+
+                    <p>
+                        Share the meeting invitation and
+                        collaborate with participants.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA -->
+<section class="mv-home-cta">
+    <div class="container">
+        <div class="mv-home-cta-card">
+            <h2>
+                Bring every conversation into one universe.
+            </h2>
+
+            <p>
+                Start meetings, manage participants and
+                collaborate through a premium communication
+                experience built around simplicity.
+            </p>
+
+            {% if request.user.is_authenticated %}
+                <a
+                    href="{% url 'dashboard' %}"
+                    class="btn mv-home-primary"
+                >
+                    Go to dashboard
+                    <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            {% else %}
+                <a
+                    href="{% url 'register' %}"
+                    class="btn mv-home-primary"
+                >
+                    Start using MeetVerse
+                    <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
 {% endblock %}
