@@ -1,112 +1,213 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 Create Account | MeetVerse
 {% endblock %}
 
+{% block body_class %}
+mv-auth-body
+{% endblock %}
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'css/premium_auth.css' %}"
+>
+{% endblock %}
+
 {% block content %}
-<section class="auth-section">
-    <div class="auth-card shadow">
-        <div class="text-center mb-4">
-            <h1 class="fw-bold">Create Account</h1>
+<section class="mv-auth-page">
+    <div class="container">
+        <div class="mv-auth-layout">
+            <div class="mv-auth-showcase">
+                <span class="mv-auth-showcase-badge">
+                    <i class="bi bi-stars"></i>
+                    Join MeetVerse
+                </span>
 
-            <p class="text-secondary">
-                Create your MeetVerse account.
-            </p>
-        </div>
+                <h1>
+                    Your professional
+                    <span class="mv-gradient-text">
+                        meeting workspace.
+                    </span>
+                </h1>
 
-        <form method="post" novalidate>
-            {% csrf_token %}
+                <p>
+                    Create your account and access real-time
+                    meetings, scheduling, chat, attendance,
+                    host controls and secure collaboration.
+                </p>
 
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
+                <div class="mv-auth-benefits">
+                    <div class="mv-auth-benefit">
+                        <span class="mv-auth-benefit-icon">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </span>
+
+                        <div>
+                            <strong>Start instantly</strong>
+                            <p>
+                                Launch meetings immediately
+                                from your dashboard.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mv-auth-benefit">
+                        <span class="mv-auth-benefit-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </span>
+
+                        <div>
+                            <strong>Collaborate easily</strong>
+                            <p>
+                                Invite participants through a
+                                simple meeting code or link.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mv-auth-benefit">
+                        <span class="mv-auth-benefit-icon">
+                            <i class="bi bi-lock-fill"></i>
+                        </span>
+
+                        <div>
+                            <strong>Stay protected</strong>
+                            <p>
+                                Use waiting rooms, passwords
+                                and host moderation tools.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
-
-            <div class="mb-3">
-                <label
-                    for="{{ form.username.id_for_label }}"
-                    class="form-label"
-                >
-                    Username
-                </label>
-
-                {{ form.username }}
-
-                {% for error in form.username.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ error }}
-                    </div>
-                {% endfor %}
             </div>
 
-            <div class="mb-3">
-                <label
-                    for="{{ form.email.id_for_label }}"
-                    class="form-label"
-                >
-                    Email address
-                </label>
+            <div class="mv-auth-card">
+                <div class="mv-auth-card-header">
+                    <span class="mv-auth-icon">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </span>
 
-                {{ form.email }}
+                    <h2>Create your account</h2>
 
-                {% for error in form.email.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ error }}
+                    <p>
+                        Set up your MeetVerse workspace.
+                    </p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="mv-auth-error-box">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="mv-auth-form-group">
+                        <div class="mv-auth-label-row">
+                            <label
+                                for="{{ form.username.id_for_label }}"
+                            >
+                                Username
+                            </label>
+                        </div>
+
+                        {{ form.username }}
+
+                        {% for error in form.username.errors %}
+                            <div class="mv-field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
-            </div>
 
-            <div class="mb-3">
-                <label
-                    for="{{ form.password1.id_for_label }}"
-                    class="form-label"
-                >
-                    Password
-                </label>
+                    <div class="mv-auth-form-group">
+                        <div class="mv-auth-label-row">
+                            <label
+                                for="{{ form.email.id_for_label }}"
+                            >
+                                Email address
+                            </label>
+                        </div>
 
-                {{ form.password1 }}
+                        {{ form.email }}
 
-                {% for error in form.password1.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ error }}
+                        {% for error in form.email.errors %}
+                            <div class="mv-field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
-            </div>
 
-            <div class="mb-4">
-                <label
-                    for="{{ form.password2.id_for_label }}"
-                    class="form-label"
-                >
-                    Confirm password
-                </label>
+                    <div class="mv-auth-form-group">
+                        <div class="mv-auth-label-row">
+                            <label
+                                for="{{ form.password1.id_for_label }}"
+                            >
+                                Password
+                            </label>
+                        </div>
 
-                {{ form.password2 }}
+                        {{ form.password1 }}
 
-                {% for error in form.password2.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ error }}
+                        {% for error in form.password1.errors %}
+                            <div class="mv-field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
+
+                    <div class="mv-auth-form-group">
+                        <div class="mv-auth-label-row">
+                            <label
+                                for="{{ form.password2.id_for_label }}"
+                            >
+                                Confirm password
+                            </label>
+                        </div>
+
+                        {{ form.password2 }}
+
+                        {% for error in form.password2.errors %}
+                            <div class="mv-field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mv-password-guide">
+                        Use at least eight characters and avoid
+                        passwords that are too common or entirely numeric.
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn mv-auth-submit"
+                    >
+                        Create MeetVerse account
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </form>
+
+                <p class="mv-auth-switch">
+                    Already have an account?
+
+                    <a href="{% url 'login' %}">
+                        Log in
+                    </a>
+                </p>
+
+                <div class="mv-auth-security">
+                    <i class="bi bi-shield-check"></i>
+                    Your account information is protected
+                </div>
             </div>
-
-            <button
-                type="submit"
-                class="btn btn-primary btn-lg w-100"
-            >
-                Create Account
-            </button>
-        </form>
-
-        <p class="text-center mt-4 mb-0">
-            Already have an account?
-
-            <a href="{% url 'login' %}">
-                Login
-            </a>
-        </p>
+        </div>
     </div>
 </section>
 {% endblock %}

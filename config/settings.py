@@ -1,5 +1,5 @@
 """
-Django settings for the MeetVerse project.
+Django settings for MeetVerse.
 """
 
 import os
@@ -17,14 +17,7 @@ load_dotenv(
 )
 
 
-def env_bool(
-    name,
-    default=False,
-):
-    """
-    Read a Boolean environment variable.
-    """
-
+def env_bool(name, default=False):
     value = os.getenv(name)
 
     if value is None:
@@ -38,18 +31,8 @@ def env_bool(
     }
 
 
-def env_list(
-    name,
-    default="",
-):
-    """
-    Read a comma-separated environment variable.
-    """
-
-    value = os.getenv(
-        name,
-        default,
-    )
+def env_list(name, default=""):
+    value = os.getenv(name, default)
 
     return [
         item.strip()
@@ -58,9 +41,7 @@ def env_list(
     ]
 
 
-SECRET_KEY = os.getenv(
-    "DJANGO_SECRET_KEY",
-)
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 if not SECRET_KEY:
     raise RuntimeError(
@@ -87,8 +68,7 @@ ALLOWED_HOSTS = env_list(
 
 if (
     RENDER_EXTERNAL_HOSTNAME
-    and RENDER_EXTERNAL_HOSTNAME
-    not in ALLOWED_HOSTS
+    and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS
 ):
     ALLOWED_HOSTS.append(
         RENDER_EXTERNAL_HOSTNAME
@@ -105,10 +85,7 @@ if RENDER_EXTERNAL_HOSTNAME:
         + RENDER_EXTERNAL_HOSTNAME
     )
 
-    if (
-        render_origin
-        not in CSRF_TRUSTED_ORIGINS
-    ):
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(
             render_origin
         )
@@ -125,7 +102,13 @@ INSTALLED_APPS = [
     "rest_framework",
     "anymail",
 
-    "accounts",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.facebook",
+
+    "accounts.apps.AccountsConfig",
     "meetings",
     "conferencing",
     "chat",
@@ -145,6 +128,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
 
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+
+    "allauth.account.middleware.AccountMiddleware",
 
     "django.contrib.messages.middleware.MessageMiddleware",
 
@@ -182,15 +167,17 @@ TEMPLATES = [
                     "django.contrib.messages."
                     "context_processors.messages"
                 ),
+                (
+                    "accounts.context_processors."
+                    "social_login_status"
+                ),
             ],
         },
     },
 ]
 
 
-WSGI_APPLICATION = (
-    "config.wsgi.application"
-)
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 DATABASE_URL = os.getenv(
@@ -201,11 +188,9 @@ DATABASE_URL = os.getenv(
 
 if DATABASE_URL:
     DATABASES = {
-        "default": (
-            dj_database_url.parse(
-                DATABASE_URL,
-                conn_max_age=60,
-            )
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=60,
         ),
     }
 
@@ -215,10 +200,7 @@ else:
             "ENGINE": (
                 "django.db.backends.sqlite3"
             ),
-
-            "NAME": (
-                BASE_DIR / "db.sqlite3"
-            ),
+            "NAME": BASE_DIR / "db.sqlite3",
         },
     }
 
@@ -255,6 +237,16 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+
+    (
+        "allauth.account.auth_backends."
+        "AuthenticationBackend"
+    ),
+]
+
+
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "Asia/Kolkata"
@@ -270,9 +262,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-STATIC_ROOT = (
-    BASE_DIR / "staticfiles"
-)
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 STORAGES = {
@@ -290,6 +280,11 @@ STORAGES = {
         ),
     },
 }
+
+
+DEFAULT_AUTO_FIELD = (
+    "django.db.models.BigAutoField"
+)
 
 
 LOGIN_URL = "login"
@@ -339,11 +334,9 @@ SECURE_HSTS_SECONDS = int(
     )
 )
 
-SECURE_HSTS_INCLUDE_SUBDOMAINS = (
-    env_bool(
-        "SECURE_HSTS_INCLUDE_SUBDOMAINS",
-        False,
-    )
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(
+    "SECURE_HSTS_INCLUDE_SUBDOMAINS",
+    False,
 )
 
 SECURE_HSTS_PRELOAD = env_bool(
@@ -352,13 +345,117 @@ SECURE_HSTS_PRELOAD = env_bool(
 )
 
 
-PASSWORD_RESET_TIMEOUT = int(
-    os.getenv(
-        "PASSWORD_RESET_TIMEOUT",
-        "3600",
-    )
-)
+# Local username/email accounts
 
+ACCOUNT_LOGIN_METHODS = {
+    "username",
+    "email",
+}
+
+ACCOUNT_SIGNUP_FIELDS = [
+    "username*",
+    "email*",
+    "password1*",
+    "password2*",
+]
+
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+ACCOUNT_LOGOUT_REDIRECT_URL = "home"
+
+
+# Social authentication
+
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+SOCIALACCOUNT_LOGIN_ON_GET = False
+
+SOCIALACCOUNT_STORE_TOKENS = False
+
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+
+GOOGLE_CLIENT_ID = os.getenv(
+    "GOOGLE_CLIENT_ID",
+    "",
+).strip()
+
+GOOGLE_CLIENT_SECRET = os.getenv(
+    "GOOGLE_CLIENT_SECRET",
+    "",
+).strip()
+
+
+FACEBOOK_CLIENT_ID = os.getenv(
+    "FACEBOOK_CLIENT_ID",
+    "",
+).strip()
+
+FACEBOOK_CLIENT_SECRET = os.getenv(
+    "FACEBOOK_CLIENT_SECRET",
+    "",
+).strip()
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+
+        "OAUTH_PKCE_ENABLED": True,
+
+        "EMAIL_AUTHENTICATION": True,
+    },
+
+    "facebook": {
+        "METHOD": "oauth2",
+
+        "SCOPE": [
+            "email",
+            "public_profile",
+        ],
+
+        "FIELDS": [
+            "id",
+            "email",
+            "name",
+            "first_name",
+            "last_name",
+            "picture",
+        ],
+
+        "VERIFIED_EMAIL": False,
+    },
+}
+
+
+if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
+    SOCIALACCOUNT_PROVIDERS[
+        "google"
+    ]["APP"] = {
+        "client_id": GOOGLE_CLIENT_ID,
+        "secret": GOOGLE_CLIENT_SECRET,
+        "key": "",
+    }
+
+
+if FACEBOOK_CLIENT_ID and FACEBOOK_CLIENT_SECRET:
+    SOCIALACCOUNT_PROVIDERS[
+        "facebook"
+    ]["APP"] = {
+        "client_id": FACEBOOK_CLIENT_ID,
+        "secret": FACEBOOK_CLIENT_SECRET,
+        "key": "",
+    }
+
+
+# OTP email delivery
 
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND",
@@ -382,13 +479,8 @@ MAILJET_SECRET_KEY = os.getenv(
 
 
 ANYMAIL = {
-    "MAILJET_API_KEY": (
-        MAILJET_API_KEY
-    ),
-
-    "MAILJET_SECRET_KEY": (
-        MAILJET_SECRET_KEY
-    ),
+    "MAILJET_API_KEY": MAILJET_API_KEY,
+    "MAILJET_SECRET_KEY": MAILJET_SECRET_KEY,
 }
 
 
@@ -414,6 +506,8 @@ EMAIL_TIMEOUT = int(
     )
 )
 
+
+# LiveKit
 
 LIVEKIT_URL = os.getenv(
     "LIVEKIT_URL",

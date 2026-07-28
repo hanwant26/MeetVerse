@@ -1,7 +1,10 @@
 from django.contrib.auth import (
     views as auth_views,
 )
-from django.urls import path
+from django.urls import (
+    include,
+    path,
+)
 
 from . import views
 from .forms import (
@@ -61,5 +64,11 @@ urlpatterns = [
         "dashboard/",
         views.dashboard_view,
         name="dashboard",
+    ),
+
+    # Google and Facebook authentication URLs.
+    path(
+        "",
+        include("allauth.urls"),
     ),
 ]

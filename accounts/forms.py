@@ -15,8 +15,7 @@ class UsernameOrEmailAuthenticationForm(
     AuthenticationForm
 ):
     """
-    Allow users to log in using either their
-    username or their registered email address.
+    Authenticate using a username or registered email.
     """
 
     username = forms.CharField(
@@ -54,6 +53,7 @@ class UsernameOrEmailAuthenticationForm(
             "Enter a correct username or email "
             "and password."
         ),
+
         "inactive": (
             "This account is inactive."
         ),
@@ -76,7 +76,7 @@ class UsernameOrEmailAuthenticationForm(
             username_user = (
                 User.objects
                 .filter(
-                    username=identifier
+                    username__iexact=identifier
                 )
                 .first()
             )
@@ -119,7 +119,7 @@ class UsernameOrEmailAuthenticationForm(
 
 class RegisterForm(UserCreationForm):
     """
-    Form for creating a new MeetVerse account.
+    Register a new MeetVerse account.
     """
 
     email = forms.EmailField(
@@ -145,15 +145,8 @@ class RegisterForm(UserCreationForm):
             "password2",
         ]
 
-    def __init__(
-        self,
-        *args,
-        **kwargs
-    ):
-        super().__init__(
-            *args,
-            **kwargs
-        )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.fields[
             "username"
@@ -242,11 +235,9 @@ class ForgotPasswordOTPForm(forms.Form):
         )
 
 
-class VerifyPasswordResetOTPForm(
-    forms.Form
-):
+class VerifyPasswordResetOTPForm(forms.Form):
     """
-    Verify the OTP and create a new password.
+    Verify an OTP and create a new password.
     """
 
     otp = forms.CharField(
@@ -255,7 +246,9 @@ class VerifyPasswordResetOTPForm(
         widget=forms.TextInput(
             attrs={
                 "class": (
-                    "form-control text-center"
+                    "form-control "
+                    "text-center "
+                    "mv-otp-input"
                 ),
                 "placeholder": (
                     "Enter 6-digit OTP"

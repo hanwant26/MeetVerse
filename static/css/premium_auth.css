@@ -1,0 +1,474 @@
+/* =========================================================
+   MeetVerse Premium Authentication Pages
+========================================================= */
+
+.mv-auth-page {
+    position: relative;
+    min-height: calc(100vh - 78px);
+    overflow: hidden;
+    padding: 70px 0;
+}
+
+.mv-auth-page::before,
+.mv-auth-page::after {
+    position: absolute;
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+    filter: blur(4px);
+}
+
+.mv-auth-page::before {
+    top: -220px;
+    right: -180px;
+    width: 520px;
+    height: 520px;
+    background:
+        radial-gradient(
+            circle,
+            rgba(91, 93, 240, 0.18),
+            transparent 70%
+        );
+}
+
+.mv-auth-page::after {
+    bottom: -250px;
+    left: -170px;
+    width: 500px;
+    height: 500px;
+    background:
+        radial-gradient(
+            circle,
+            rgba(14, 165, 233, 0.13),
+            transparent 70%
+        );
+}
+
+.mv-auth-layout {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 500px;
+    gap: 55px;
+    align-items: center;
+}
+
+.mv-auth-showcase {
+    max-width: 650px;
+}
+
+.mv-auth-showcase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid rgba(91, 93, 240, 0.18);
+    border-radius: 999px;
+    background: var(--mv-primary-soft);
+    color: var(--mv-primary);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.mv-auth-showcase h1 {
+    margin: 21px 0 18px;
+    color: var(--mv-text);
+    font-size: clamp(40px, 5vw, 62px);
+    font-weight: 850;
+    line-height: 1.07;
+    letter-spacing: -2px;
+}
+
+.mv-auth-showcase > p {
+    max-width: 580px;
+    margin: 0;
+    color: var(--mv-text-soft);
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+.mv-auth-benefits {
+    display: grid;
+    gap: 14px;
+    margin-top: 31px;
+}
+
+.mv-auth-benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+}
+
+.mv-auth-benefit-icon {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: var(--mv-primary-soft);
+    color: var(--mv-primary);
+    font-size: 17px;
+}
+
+.mv-auth-benefit strong {
+    display: block;
+    color: var(--mv-text);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.mv-auth-benefit p {
+    margin: 4px 0 0;
+    color: var(--mv-text-soft);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.mv-auth-card {
+    position: relative;
+    overflow: hidden;
+    padding: 36px;
+    border: 1px solid var(--mv-border);
+    border-radius: 28px;
+    background: var(--mv-surface-glass);
+    box-shadow: var(--mv-shadow-lg);
+    backdrop-filter: blur(20px);
+}
+
+.mv-auth-card::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background:
+        linear-gradient(
+            90deg,
+            var(--mv-primary),
+            #8b5cf6,
+            var(--mv-secondary)
+        );
+    content: "";
+}
+
+.mv-auth-card-header {
+    margin-bottom: 27px;
+    text-align: center;
+}
+
+.mv-auth-icon {
+    display: inline-flex;
+    width: 62px;
+    height: 62px;
+    margin-bottom: 17px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 19px;
+    background:
+        linear-gradient(
+            135deg,
+            var(--mv-primary),
+            var(--mv-primary-dark)
+        );
+    color: #ffffff;
+    font-size: 25px;
+    box-shadow:
+        0 15px 32px
+        rgba(91, 93, 240, 0.26);
+}
+
+.mv-auth-card-header h2 {
+    margin: 0;
+    color: var(--mv-text);
+    font-size: 28px;
+    font-weight: 850;
+    letter-spacing: -0.7px;
+}
+
+.mv-auth-card-header p {
+    margin: 9px 0 0;
+    color: var(--mv-text-soft);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.mv-auth-form-group {
+    margin-bottom: 18px;
+}
+
+.mv-auth-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.mv-auth-label-row label {
+    margin: 0;
+    color: var(--mv-text);
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.mv-auth-label-row a {
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.mv-auth-card .form-control {
+    min-height: 49px;
+    padding: 11px 14px;
+}
+
+.mv-auth-submit {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 6px;
+    border: 0;
+    border-radius: 14px;
+    background:
+        linear-gradient(
+            135deg,
+            var(--mv-primary),
+            var(--mv-primary-dark)
+        );
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow:
+        0 14px 30px
+        rgba(91, 93, 240, 0.24);
+    transition:
+        transform var(--mv-transition),
+        box-shadow var(--mv-transition);
+}
+
+.mv-auth-submit:hover {
+    transform: translateY(-2px);
+    color: #ffffff;
+    box-shadow:
+        0 18px 36px
+        rgba(91, 93, 240, 0.3);
+}
+
+.mv-auth-switch {
+    margin: 23px 0 0;
+    color: var(--mv-text-soft);
+    font-size: 13px;
+    text-align: center;
+}
+
+.mv-auth-switch a {
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.mv-auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: var(--mv-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.mv-auth-divider::before,
+.mv-auth-divider::after {
+    height: 1px;
+    flex: 1;
+    background: var(--mv-border);
+    content: "";
+}
+
+.mv-auth-error-box {
+    margin-bottom: 18px;
+    padding: 13px 15px;
+    border: 1px solid rgba(220, 53, 69, 0.22);
+    border-radius: 13px;
+    background: rgba(220, 53, 69, 0.08);
+    color: #c92a3c;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+html[data-theme="dark"] .mv-auth-error-box {
+    color: #ff8793;
+}
+
+.mv-field-error {
+    margin-top: 7px;
+    color: var(--mv-danger);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.mv-password-guide {
+    margin: 12px 0 0;
+    padding: 13px 15px;
+    border: 1px solid var(--mv-border);
+    border-radius: 13px;
+    background: var(--mv-surface-soft);
+    color: var(--mv-text-soft);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.mv-auth-security {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 18px;
+    color: var(--mv-text-muted);
+    font-size: 11px;
+}
+
+.mv-auth-security i {
+    color: var(--mv-success);
+}
+
+.mv-otp-email {
+    margin: 12px 0 0;
+    padding: 11px 15px;
+    border-radius: 12px;
+    background: var(--mv-primary-soft);
+    color: var(--mv-primary);
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+    word-break: break-word;
+}
+
+.mv-otp-input {
+    text-align: center;
+    font-size: 22px !important;
+    font-weight: 800;
+    letter-spacing: 8px;
+}
+
+.mv-reset-state {
+    padding: 20px 0 4px;
+    text-align: center;
+}
+
+.mv-reset-state-icon {
+    display: inline-flex;
+    width: 72px;
+    height: 72px;
+    margin-bottom: 18px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 22px;
+    background: rgba(247, 144, 9, 0.12);
+    color: var(--mv-warning);
+    font-size: 29px;
+}
+
+.mv-reset-state h3 {
+    color: var(--mv-text);
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.mv-reset-state p {
+    color: var(--mv-text-soft);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.mv-success-card {
+    padding: 18px 0 6px;
+    text-align: center;
+}
+
+.mv-success-icon {
+    display: inline-flex;
+    width: 82px;
+    height: 82px;
+    margin-bottom: 21px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    background: rgba(22, 166, 106, 0.13);
+    color: var(--mv-success);
+    font-size: 36px;
+}
+
+.mv-success-card h2 {
+    color: var(--mv-text);
+    font-size: 28px;
+    font-weight: 850;
+}
+
+.mv-success-card p {
+    margin: 12px 0 25px;
+    color: var(--mv-text-soft);
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+@media (max-width: 991px) {
+    .mv-auth-page {
+        padding: 55px 0;
+    }
+
+    .mv-auth-layout {
+        grid-template-columns: 1fr;
+        gap: 38px;
+    }
+
+    .mv-auth-showcase {
+        max-width: 720px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .mv-auth-showcase > p {
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .mv-auth-benefits {
+        max-width: 530px;
+        margin-right: auto;
+        margin-left: auto;
+        text-align: left;
+    }
+
+    .mv-auth-card {
+        width: min(100%, 540px);
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 575px) {
+    .mv-auth-page {
+        padding: 35px 0;
+    }
+
+    .mv-auth-showcase {
+        display: none;
+    }
+
+    .mv-auth-card {
+        padding: 28px 20px;
+        border-radius: 22px;
+    }
+
+    .mv-auth-card-header h2 {
+        font-size: 24px;
+    }
+
+    .mv-otp-input {
+        letter-spacing: 5px;
+    }
+}

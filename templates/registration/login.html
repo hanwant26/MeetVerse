@@ -1,103 +1,280 @@
 {% extends "base.html" %}
+{% load static %}
+{% load socialaccount %}
 
 {% block title %}
 Login | MeetVerse
 {% endblock %}
 
+{% block body_class %}
+mv-auth-body
+{% endblock %}
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'css/premium_auth.css' %}"
+>
+{% endblock %}
+
 {% block content %}
-<section class="auth-section">
-    <div class="auth-card shadow">
-        <div class="text-center mb-4">
-            <div class="display-5 mb-3">
-                👤
-            </div>
+<section class="mv-auth-page">
+    <div class="container">
+        <div class="mv-auth-layout">
 
-            <h1 class="fw-bold">
-                Welcome Back
-            </h1>
+            <!-- Left Information Area -->
+            <div class="mv-auth-showcase">
+                <span class="mv-auth-showcase-badge">
+                    <i class="bi bi-stars"></i>
 
-            <p class="text-secondary mb-0">
-                Log in using your username
-                or registered email.
-            </p>
-        </div>
+                    Welcome Back
+                </span>
 
-        <form method="post">
-            {% csrf_token %}
+                <h1>
+                    Return to your
 
-            {% if next %}
-                <input
-                    type="hidden"
-                    name="next"
-                    value="{{ next }}"
-                >
-            {% endif %}
+                    <span class="mv-gradient-text">
+                        meeting universe.
+                    </span>
+                </h1>
 
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {% for error in form.non_field_errors %}
+                <p>
+                    Log in to manage scheduled meetings,
+                    attendance, participant controls and
+                    everything inside your workspace.
+                </p>
+
+                <div class="mv-auth-benefits">
+
+                    <div class="mv-auth-benefit">
+                        <span class="mv-auth-benefit-icon">
+                            <i class="bi bi-camera-video-fill"></i>
+                        </span>
+
                         <div>
-                            {{ error }}
+                            <strong>
+                                Instant Meetings
+                            </strong>
+
+                            <p>
+                                Start or join meetings directly
+                                from your personal dashboard.
+                            </p>
                         </div>
-                    {% endfor %}
+                    </div>
+
+                    <div class="mv-auth-benefit">
+                        <span class="mv-auth-benefit-icon">
+                            <i class="bi bi-calendar-check-fill"></i>
+                        </span>
+
+                        <div>
+                            <strong>
+                                Smart Scheduling
+                            </strong>
+
+                            <p>
+                                Organise upcoming meetings,
+                                invitations and reminders.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mv-auth-benefit">
+                        <span class="mv-auth-benefit-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </span>
+
+                        <div>
+                            <strong>
+                                Protected Access
+                            </strong>
+
+                            <p>
+                                Secure authentication and OTP
+                                password recovery.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
+            </div>
 
-            <div class="mb-3">
-                <label
-                    for="{{ form.username.id_for_label }}"
-                    class="form-label"
-                >
-                    Username or Email
-                </label>
+            <!-- Login Card -->
+            <div class="mv-auth-card">
 
-                {{ form.username }}
+                <div class="mv-auth-card-header">
+                    <span class="mv-auth-icon">
+                        <i class="bi bi-person-lock"></i>
+                    </span>
 
-                {% for error in form.username.errors %}
-                    <div class="text-danger small mt-2">
-                        {{ error }}
+                    <h2>
+                        Log In to MeetVerse
+                    </h2>
+
+                    <p>
+                        Use your username, registered email,
+                        Google or Facebook.
+                    </p>
+                </div>
+
+                <!-- Username or Email Login -->
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if next %}
+                        <input
+                            type="hidden"
+                            name="next"
+                            value="{{ next }}"
+                        >
+                    {% endif %}
+
+                    {% if form.non_field_errors %}
+                        <div class="mv-auth-error-box">
+                            {% for error in form.non_field_errors %}
+                                <div>
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Username or Email -->
+                    <div class="mv-auth-form-group">
+                        <div class="mv-auth-label-row">
+                            <label
+                                for="{{ form.username.id_for_label }}"
+                            >
+                                Username or Email
+                            </label>
+                        </div>
+
+                        {{ form.username }}
+
+                        {% for error in form.username.errors %}
+                            <div class="mv-field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
-            </div>
 
-            <div class="mb-3">
-                <label
-                    for="{{ form.password.id_for_label }}"
-                    class="form-label"
-                >
-                    Password
-                </label>
+                    <!-- Password -->
+                    <div class="mv-auth-form-group">
+                        <div class="mv-auth-label-row">
+                            <label
+                                for="{{ form.password.id_for_label }}"
+                            >
+                                Password
+                            </label>
 
-                {{ form.password }}
+                            <a href="{% url 'password_reset' %}">
+                                Forgot Password?
+                            </a>
+                        </div>
 
-                {% for error in form.password.errors %}
-                    <div class="text-danger small mt-2">
-                        {{ error }}
+                        {{ form.password }}
+
+                        {% for error in form.password.errors %}
+                            <div class="mv-field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
+
+                    <button
+                        type="submit"
+                        class="btn mv-auth-submit"
+                    >
+                        Log In Securely
+
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </form>
+
+                <!-- Social Login -->
+                {% if google_login_enabled or facebook_login_enabled %}
+                    <div class="mv-social-login-area">
+
+                        <div class="mv-auth-divider">
+                            Or Continue With
+                        </div>
+
+                        <div class="mv-social-login-grid">
+
+                            <!-- Google Login -->
+                            {% if google_login_enabled %}
+                                <form
+                                    method="post"
+                                    action="{% provider_login_url 'google' process='login' %}"
+                                    class="mv-social-login-form"
+                                >
+                                    {% csrf_token %}
+
+                                    {% if next %}
+                                        <input
+                                            type="hidden"
+                                            name="next"
+                                            value="{{ next }}"
+                                        >
+                                    {% endif %}
+
+                                    <button
+                                        type="submit"
+                                        class="mv-social-login-button mv-google-button"
+                                    >
+                                        <i class="bi bi-google"></i>
+
+                                        Google
+                                    </button>
+                                </form>
+                            {% endif %}
+
+                            <!-- Facebook Login -->
+                            {% if facebook_login_enabled %}
+                                <form
+                                    method="post"
+                                    action="{% provider_login_url 'facebook' process='login' %}"
+                                    class="mv-social-login-form"
+                                >
+                                    {% csrf_token %}
+
+                                    {% if next %}
+                                        <input
+                                            type="hidden"
+                                            name="next"
+                                            value="{{ next }}"
+                                        >
+                                    {% endif %}
+
+                                    <button
+                                        type="submit"
+                                        class="mv-social-login-button mv-facebook-button"
+                                    >
+                                        <i class="bi bi-facebook"></i>
+
+                                        Facebook
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <p class="mv-auth-switch">
+                    New to MeetVerse?
+
+                    <a href="{% url 'register' %}">
+                        Create an Account
+                    </a>
+                </p>
+
+                <div class="mv-auth-security">
+                    <i class="bi bi-shield-check"></i>
+
+                    Protected account authentication
+                </div>
             </div>
-
-            <div class="text-end mb-3">
-                <a href="{% url 'password_reset' %}">
-                    Forgot password?
-                </a>
-            </div>
-
-            <button
-                type="submit"
-                class="btn btn-primary btn-lg w-100"
-            >
-                Login
-            </button>
-        </form>
-
-        <p class="text-center mt-4 mb-0">
-            Don’t have an account?
-
-            <a href="{% url 'register' %}">
-                Create account
-            </a>
-        </p>
+        </div>
     </div>
 </section>
 {% endblock %}
