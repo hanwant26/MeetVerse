@@ -416,14 +416,15 @@ SOCIALACCOUNT_PROVIDERS = {
     "facebook": {
         "METHOD": "oauth2",
 
+        # Do not request the Facebook email
+        # permission because Meta is rejecting
+        # it for the current application.
         "SCOPE": [
-            "email",
             "public_profile",
         ],
 
         "FIELDS": [
             "id",
-            "email",
             "name",
             "first_name",
             "last_name",
@@ -453,6 +454,9 @@ if FACEBOOK_CLIENT_ID and FACEBOOK_CLIENT_SECRET:
         "secret": FACEBOOK_CLIENT_SECRET,
         "key": "",
     }
+
+
+
 
 
 # OTP email delivery
